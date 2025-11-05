@@ -1,9 +1,0 @@
-../Drivers/CMSIS/Include/core_cm4.h:1648:22:__NVIC_SetPriorityGrouping	1
-../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_bus.h:1089:22:LL_APB1_GRP1_EnableClock	1
-../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_bus.h:1675:22:LL_APB2_GRP1_EnableClock	1
-../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_pwr.h:398:22:LL_PWR_EnableBkUpAccess	1
-../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rtc.h:4839:22:LL_RTC_BAK_SetRegister	1
-../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rtc.h:4889:26:LL_RTC_BAK_GetRegister	1
-../Core/Src/main.c:41:5:main	4
-../Core/Src/main.c:88:6:SysTick_Handler	5
-../Core/Src/main.c:117:6:Error_Handler	1
