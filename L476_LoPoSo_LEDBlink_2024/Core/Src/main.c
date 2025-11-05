@@ -85,15 +85,24 @@ int main(void)
 		  // Code pour expe == 1
 		  SystemClock_Config_MSI_4M();		// MSI à 4 Mhz
 		  SystemClock_Enable_PLL_80M();		// PLL à 80 Mhz
+		  Configure_VoltageScaling(1);
+		  Configure_FlashLatency(4);
+		  Disable_MSI_LSE_Calibration();
 		  break;
 	  case 2:
 		  SystemClock_Config_MSI_24M();		// MSI à 24 MHz
 		  SystemClock_Disable_PLL();		// PLL désactivée
+		  Configure_VoltageScaling(1);
+		  Configure_FlashLatency(1);
+		  Disable_MSI_LSE_Calibration();
 		  break;
 	  case 3:
 		  // Code pour expe == 3
 		  SystemClock_Config_MSI_24M();		// MSI à 24 MHz
 		  SystemClock_Disable_PLL();		// PLL désactivée
+		  Configure_VoltageScaling(2);
+		  Configure_FlashLatency(3);
+		  Disable_MSI_LSE_Calibration();
 		  break;
 	  case 4:
 		  // Code pour expe == 4
@@ -123,6 +132,54 @@ int main(void)
 
   }
 }
+
+// partie commune a toutes les utilisations du wakeup timer
+static void RTC_wakeup_init( int delay )
+{
+	LL_RTC_DisableWriteProtection( RTC );
+	LL_RTC_WAKEUP_Disable( RTC );
+	while	( !LL_RTC_IsActiveFlag_WUTW( RTC ) )
+		{ }
+	// connecter le timer a l'horloge 1Hz de la RTC
+	LL_RTC_WAKEUP_SetClock( RTC, LL_RTC_WAKEUPCLOCK_CKSPRE );
+	// fixer la duree de temporisation
+	LL_RTC_WAKEUP_SetAutoReload( RTC, delay );	// 16 bits
+	LL_RTC_ClearFlag_WUT(RTC);
+	LL_RTC_EnableIT_WUT(RTC);
+	LL_RTC_WAKEUP_Enable(RTC);
+	LL_RTC_EnableWriteProtection(RTC);
+}
+
+// Dans le cas des modes STANDBY et SHUTDOWN, le MPU sera reveille par reset
+// causé par 1 wakeup line (interne ou externe) (le NVIC n'est plus alimenté)
+void RTC_wakeup_init_from_standby_or_shutdown( int delay )
+{
+	RTC_wakeup_init( delay );
+	// enable the Internal Wake-up line
+	LL_PWR_EnableInternWU();	// ceci ne concerne que Standby et Shutdown, pas STOPx
+}
+
+// Dans le cas des modes STOPx, le MPU sera reveille par interruption
+// le module EXTI et une partie du NVIC sont encore alimentes
+// le contenu de la RAM et des registres étant préservé, le MPU
+// reprend l'execution après l'instruction WFI
+void RTC_wakeup_init_from_stop( int delay )
+{
+	RTC_wakeup_init( delay );
+	// valider l'interrupt par la ligne 20 du module EXTI, qui est réservée au wakeup timer
+	LL_EXTI_EnableIT_0_31( LL_EXTI_LINE_20 );
+	LL_EXTI_EnableRisingTrig_0_31( LL_EXTI_LINE_20 );
+	// valider l'interrupt chez NVIC
+	NVIC_SetPriority( RTC_WKUP_IRQn, 1 );
+	NVIC_EnableIRQ( RTC_WKUP_IRQn );
+}
+
+// wakeup timer interrupt Handler (inutile mais doit etre defini)
+void RTC_WKUP_IRQHandler()
+{
+	LL_EXTI_ClearFlag_0_31( LL_EXTI_LINE_20 );
+}
+
 
 void Button_EXTI_Config(void)
 {
@@ -162,8 +219,50 @@ void EXTI15_10_IRQHandler(void)
         }else{
         	blue_mode = 0;
         }
+
+        switch (expe) {		// changement de config specifique au blu mode
+        	case 1:
+        		if (blue_mode == 1){
+        			Enter_Sleep_100Hz();
+        		}else{
+        			Exit_Sleep_100Hz();
+        		}
+        		break;
+        	case 2:
+        		Exit_Sleep_100Hz();
+        		Enable_MSI_LSE_Calibration();
+        		break;
+        	case 3:
+        		if (blue_mode == 1){
+					Enter_Sleep_100Hz();
+				}else{
+					Exit_Sleep_100Hz();
+				}
+        		break;
+        	case 4:
+        		Exit_Sleep_100Hz();
+        		Enable_MSI_LSE_Calibration();
+        		break;
+        	case 5:
+        		RTC_wakeup_init_from_stop(7);
+        		break;
+        	case 6:
+        		RTC_wakeup_init_from_stop(7);
+        		break;
+        	case 7:
+        		RTC_wakeup_init_from_stop(7);
+        		break;
+        	case 8:
+        		RTC_wakeup_init_from_standby_or_shutdown(7);
+        		break;
+		    default:
+			    // Code si expe n’est pas entre 1 et 8
+			    break;
+        }
+
     }
 }
+
 
 // systick interrupt handler --> allumage LED toutes les 2 s pendant 50 ms.
 //Scrutation de l'état du bouton bleu  (pas d'action à ce stade).
@@ -194,7 +293,7 @@ void SysTick_Handler()
 	subticks = ticks % 200;
 	if	( subticks == 0 )
 		LED_GREEN(1);
-	else if	( subticks == 5*expe )
+	else if	( subticks == 15*expe )
 		LED_GREEN(0);
 }
 
