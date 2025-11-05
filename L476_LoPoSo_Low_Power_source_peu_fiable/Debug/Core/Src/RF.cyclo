@@ -1,0 +1,7 @@
+../Drivers/CMSIS/Include/core_cm4.h:1648:22:__NVIC_SetPriorityGrouping	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_bus.h:1089:22:LL_APB1_GRP1_EnableClock	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_bus.h:1675:22:LL_APB2_GRP1_EnableClock	1
+../Core/Inc/RadioFunctions.h:76:20:Delay_ms	1
+../Core/Src/RF.c:30:6:Transmission_RF	1
+../Core/Src/RF.c:72:6:SysTick_Handler2	3
+../Core/Src/RF.c:113:6:Error_Handler2	1

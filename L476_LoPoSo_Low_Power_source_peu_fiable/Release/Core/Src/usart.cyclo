@@ -1,0 +1,6 @@
+../Core/Src/usart.c:14:6:USART2_Init	1
+../Core/Src/usart.c:48:6:UART_SendChar	2
+../Core/Src/usart.c:54:6:UART_SendStr	2
+../Core/Src/usart.c:61:6:UART_SendBufHex	2
+../Core/Src/usart.c:71:6:UART_SendHex8	1
+../Core/Src/usart.c:76:6:UART_SendInt	3

@@ -1,0 +1,16 @@
+../Drivers/CMSIS/Include/core_cm4.h:1809:22:__NVIC_SetPriority	2
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:2489:22:LL_RCC_MSI_Enable	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:2509:26:LL_RCC_MSI_IsReady	2
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:2742:22:LL_RCC_SetSysClkSource	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:2756:26:LL_RCC_GetSysClkSource	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:2776:22:LL_RCC_SetAHBPrescaler	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:2792:22:LL_RCC_SetAPB1Prescaler	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:2808:22:LL_RCC_SetAPB2Prescaler	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:3733:22:LL_RCC_PLL_Enable	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:3754:26:LL_RCC_PLL_IsReady	2
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:3800:22:LL_RCC_PLL_ConfigDomain_SYS	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:4178:22:LL_RCC_PLL_EnableDomain_SYS	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_pwr.h:344:22:LL_PWR_SetRegulVoltageScaling	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_system.h:1400:22:LL_FLASH_SetLatency	1
+../Core/Src/clock.c:29:6:SystemClock_Config_80M	4
+../Core/Src/clock.c:63:6:mySystick	1

@@ -1,0 +1,6 @@
+../Core/Src/usart.c:14:6:USART2_Init	80	static
+../Core/Src/usart.c:48:6:UART_SendChar	0	static
+../Core/Src/usart.c:54:6:UART_SendStr	8	static
+../Core/Src/usart.c:61:6:UART_SendBufHex	16	static
+../Core/Src/usart.c:71:6:UART_SendHex8	8	static
+../Core/Src/usart.c:76:6:UART_SendInt	40	static

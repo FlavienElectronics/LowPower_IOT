@@ -1,0 +1,51 @@
+!SESSION 2024-12-04 09:16:33.909 -----------------------------------------------
+eclipse.buildId=Version 1.15.1
+java.version=17.0.8.1
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=fr_FR
+Framework arguments:  U:\Windows\Bureau\L476_LoPoSo_Low_Power\L476_LoPoSo_Low_Power\.cproject
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 U:\Windows\Bureau\L476_LoPoSo_Low_Power\L476_LoPoSo_Low_Power\.cproject
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2024-12-04 09:16:57.725
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2024-12-04 09:16:57.741
+!MESSAGE Log4j2 initialized with config file U:\Windows\Bureau\L476_LoPoSo_Low_Power\L476_LoPoSo_Low_Power\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2024-12-04 09:17:48.452
+!MESSAGE Started RMI Server, listening on port 41337
+!SESSION 2024-12-04 09:18:07.723 -----------------------------------------------
+eclipse.buildId=Version 1.15.1
+java.version=17.0.8.1
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=fr_FR
+Framework arguments:  U:\Windows\Bureau\L476_LoPoSo_Low_Power\L476_LoPoSo_Low_Power\.project
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 U:\Windows\Bureau\L476_LoPoSo_Low_Power\L476_LoPoSo_Low_Power\.project
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2024-12-04 09:18:51.489
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2024-12-04 09:18:51.504
+!MESSAGE Log4j2 initialized with config file U:\Windows\Bureau\L476_LoPoSo_Low_Power\L476_LoPoSo_Low_Power\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2024-12-04 09:18:54.896
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY org.eclipse.core.jobs 2 2 2024-12-04 09:19:17.809
+!MESSAGE Job found still running after platform shutdown.  Jobs should be canceled by the plugin that scheduled them during shutdown: org.eclipse.ui.internal.Workbench$39
+!SESSION 2024-12-04 09:19:22.416 -----------------------------------------------
+eclipse.buildId=Version 1.15.1
+java.version=17.0.8.1
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=fr_FR
+Framework arguments:  U:\Windows\Bureau\L476_LoPoSo_Low_Power\L476_LoPoSo_Low_Power\.cproject
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 U:\Windows\Bureau\L476_LoPoSo_Low_Power\L476_LoPoSo_Low_Power\.cproject
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2024-12-04 09:19:29.597
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2024-12-04 09:19:29.605
+!MESSAGE Log4j2 initialized with config file U:\Windows\Bureau\L476_LoPoSo_Low_Power\L476_LoPoSo_Low_Power\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2024-12-04 09:19:32.756
+!MESSAGE Started RMI Server, listening on port 41337

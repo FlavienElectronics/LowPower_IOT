@@ -1,0 +1,9 @@
+../Drivers/CMSIS/Include/core_cm4.h:1648:22:__NVIC_SetPriorityGrouping	24	static
+../Drivers/CMSIS/Include/core_cm4.h:1933:34:__NVIC_SystemReset	4	static,ignoring_inline_asm
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:2362:26:LL_RCC_LSE_IsReady	4	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_bus.h:1089:22:LL_APB1_GRP1_EnableClock	24	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_bus.h:1675:22:LL_APB2_GRP1_EnableClock	24	static
+../Core/Src/main.c:44:5:main	16	static,ignoring_inline_asm
+../Core/Src/main.c:159:6:SysTick_Handler	8	static
+../Core/Src/main.c:182:6:RTC_Alarm_IRQHandler	8	static
+../Core/Src/main.c:200:6:Error_Handler	4	static

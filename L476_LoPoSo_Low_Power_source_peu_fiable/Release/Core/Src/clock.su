@@ -1,0 +1,2 @@
+../Core/Src/clock.c:29:6:SystemClock_Config_80M	0	static
+../Core/Src/clock.c:63:6:mySystick	0	static
