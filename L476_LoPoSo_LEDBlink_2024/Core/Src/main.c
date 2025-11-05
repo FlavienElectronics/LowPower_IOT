@@ -83,16 +83,17 @@ int main(void)
   switch (expe) {	//TEST
 	  case 1:
 		  // Code pour expe == 1
-		  RCC->ICSCR &= ~RCC_ICSCR_MSIRANGE;                 // Clear le champ MSIRANGE
-		  RCC->ICSCR |= RCC_ICSCR_MSIRANGE_2 | RCC_ICSCR_MSIRANGE_1;  // 0b0110 = 4 MHz
+		  SystemClock_Config_MSI_4M();		// MSI à 4 Mhz
+		  SystemClock_Enable_PLL_80M();		// PLL à 80 Mhz
 		  break;
 	  case 2:
-		  // Code pour expe == 2
-		  RCC->ICSCR &= ~RCC_ICSCR_MSIRANGE;
-		  RCC->ICSCR |= RCC_ICSCR_MSIRANGE_3 | RCC_ICSCR_MSIRANGE_0;  // 0b1001 = 24 MHz
+		  SystemClock_Config_MSI_24M();		// MSI à 24 MHz
+		  SystemClock_Disable_PLL();		// PLL désactivée
 		  break;
 	  case 3:
 		  // Code pour expe == 3
+		  SystemClock_Config_MSI_24M();		// MSI à 24 MHz
+		  SystemClock_Disable_PLL();		// PLL désactivée
 		  break;
 	  case 4:
 		  // Code pour expe == 4
