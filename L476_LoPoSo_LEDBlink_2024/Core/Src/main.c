@@ -28,44 +28,197 @@
 #include "gpio.h"
 #include "clock.h"
 #include "spi.h"
-#include "usart.h"
+  case 1:
+    /* expe 1 : MSI 4 MHz, PLL 80 MHz, VOS SCALE1, Flash latency 4,
+     * calibration off->on (we'll enable LSE later if needed by blue button),
+     * Blue mode: Sleep (100Hz), Transceiver: Stand-by I
+     */
+    SystemClock_Config_4M();
+    LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE1);
+    LL_FLASH_SetLatency(LL_FLASH_LATENCY_4);
+    /* Enable PLL and switch to 80 MHz */
+    SystemClock_EnablePLL_80M();
+    /* Transceiver: standby I (CE low, CSN high) */
+    LL_GPIO_ResetOutputPin(nRF_CE_GPIO_Port, nRF_CE_Pin);
+    LL_GPIO_SetOutputPin(nRF_CSN_GPIO_Port, nRF_CSN_Pin);
+    break;
 
-#include "stm32l4xx_ll_rtc.h"
+  case 2:
+    /* expe 2 : MSI 24 MHz, PLL off, VOS SCALE1, Flash latency 1,
+     * calibration off->on, Sleep off, Blue mode = Calibration MSI/LSE
+     */
+    SystemClock_Config_24M();
+    SystemClock_DisablePLL();
+    LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE1);
+    LL_FLASH_SetLatency(LL_FLASH_LATENCY_1);
+    /* transceiver standby I */
+    LL_GPIO_ResetOutputPin(nRF_CE_GPIO_Port, nRF_CE_Pin);
+    LL_GPIO_SetOutputPin(nRF_CSN_GPIO_Port, nRF_CSN_Pin);
+    break;
 
-volatile unsigned int ticks = 0; //pour la gestion des intervalles de temps. 1 tick = 10 ms.
-volatile int blue_mode = 0; //pour savoir si on est dans le mode "Blue mode"
-volatile int old_blue = 0;
-uint32_t expe = 0; //pour la sauvegarde du numéro de l'expérience
+  case 3:
+    /* expe 3 : MSI 24 MHz, PLL off, VOS SCALE2, Flash latency 3,
+     * calibration off, Sleep off->on, Blue mode = Sleep (100Hz)
+     */
+    SystemClock_Config_24M();
+    SystemClock_DisablePLL();
+    LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE2);
+    LL_FLASH_SetLatency(LL_FLASH_LATENCY_3);
+    LL_GPIO_ResetOutputPin(nRF_CE_GPIO_Port, nRF_CE_Pin);
+    LL_GPIO_SetOutputPin(nRF_CSN_GPIO_Port, nRF_CSN_Pin);
+    break;
+
+  case 4:
+    /* expe 4 : MSI 24 MHz, PLL off, VOS SCALE2, Flash latency 3,
+     * calibration off->on, Sleep off, Blue mode = Calibration MSI/LSE
+     */
+    SystemClock_Config_24M();
+    SystemClock_DisablePLL();
+    LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE2);
+    LL_FLASH_SetLatency(LL_FLASH_LATENCY_3);
+    LL_GPIO_ResetOutputPin(nRF_CE_GPIO_Port, nRF_CE_Pin);
+    LL_GPIO_SetOutputPin(nRF_CSN_GPIO_Port, nRF_CSN_Pin);
+    break;
+
+  case 5:
+    /* expe 5 : MSI 24 MHz, PLL off, VOS SCALE2, Flash latency 3,
+     * calibration on, Sleep on, Blue mode = STOP0 (wakeup 7s), transceiver Power-down
+     */
+    SystemClock_Config_24M();
+    SystemClock_DisablePLL();
+    LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE2);
+    LL_FLASH_SetLatency(LL_FLASH_LATENCY_3);
+    /* Enable LSE and MSIPLL mode for calibration (persistently on) */
+    LL_RCC_LSE_Enable();
+    while (LL_RCC_LSE_IsReady() != 1) { }
+    LL_RCC_MSI_EnablePLLMode();
+    /* transceiver power-down pins state (CE low, CSN high) */
+    LL_GPIO_ResetOutputPin(nRF_CE_GPIO_Port, nRF_CE_Pin);
+    LL_GPIO_SetOutputPin(nRF_CSN_GPIO_Port, nRF_CSN_Pin);
+    break;
+
+  case 6:
+    /* expe 6 : MSI 24 MHz, PLL off, VOS SCALE2, Flash latency 3,
+     * calibration on, Sleep on, Blue mode = STOP1 (wakeup 7s), transceiver Power-down
+     */
+    SystemClock_Config_24M();
+    SystemClock_DisablePLL();
+    LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE2);
+    LL_FLASH_SetLatency(LL_FLASH_LATENCY_3);
+    LL_RCC_LSE_Enable();
+    while (LL_RCC_LSE_IsReady() != 1) { }
+    LL_RCC_MSI_EnablePLLMode();
+    LL_GPIO_ResetOutputPin(nRF_CE_GPIO_Port, nRF_CE_Pin);
+    LL_GPIO_SetOutputPin(nRF_CSN_GPIO_Port, nRF_CSN_Pin);
+    break;
+
+  case 7:
+    /* expe 7 : MSI 24 MHz, PLL off, VOS SCALE2, Flash latency 3,
+     * calibration on, Sleep on, Blue mode = STOP2 (wakeup 7s), transceiver Power-down
+     */
+    SystemClock_Config_24M();
+    SystemClock_DisablePLL();
+    LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE2);
+    LL_FLASH_SetLatency(LL_FLASH_LATENCY_3);
+    LL_RCC_LSE_Enable();
+    while (LL_RCC_LSE_IsReady() != 1) { }
+    LL_RCC_MSI_EnablePLLMode();
+    LL_GPIO_ResetOutputPin(nRF_CE_GPIO_Port, nRF_CE_Pin);
+    LL_GPIO_SetOutputPin(nRF_CSN_GPIO_Port, nRF_CSN_Pin);
+    break;
+
+  case 8:
+    /* expe 8 : MSI 24 MHz, PLL off, VOS SCALE2, Flash latency 3,
+     * calibration on, Sleep on, Blue mode = SHUTDOWN (wakeup 7s), transceiver Power-down
+     */
+    SystemClock_Config_24M();
+    SystemClock_DisablePLL();
+    LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE2);
+    LL_FLASH_SetLatency(LL_FLASH_LATENCY_3);
+    LL_RCC_LSE_Enable();
+    while (LL_RCC_LSE_IsReady() != 1) { }
+    LL_RCC_MSI_EnablePLLMode();
+    LL_GPIO_ResetOutputPin(nRF_CE_GPIO_Port, nRF_CE_Pin);
+    LL_GPIO_SetOutputPin(nRF_CSN_GPIO_Port, nRF_CSN_Pin);
+    break;
+
+  default:
+    break;
 
 
-int main(void)
-{
+  /* Main loop: react to Blue button events according to the experiment mode.
+   * The EXTI handler and SysTick already update `blue_mode`.
+   */
+  while (1)
+  {
+    if (blue_mode)
+    {
+      /* Clear flag immediately to avoid re-entrance */
+      blue_mode = 0;
 
-  RCC->CR |= RCC_CR_MSION;		// Activation du MSI
+      switch (expe)
+      {
+        case 1:
+        case 3:
+          /* Blue mode: enter normal SLEEP (not deep) so SysTick (100Hz) still runs
+           * Note: LL_LPM_EnableSleep clears SLEEPDEEP bit; use WFI to sleep until event/IRQ
+           */
+          LL_LPM_EnableSleep();
+          __WFI();
+          break;
 
-  /*clock domains activation*/
-  LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
-  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
+        case 2:
+        case 4:
+          /* Blue mode: toggle MSI calibration using LSE
+           * If MSIPLLEN not active, enable LSE then enable MSIPLL; otherwise disable MSIPLL and LSE.
+           */
+          if (LL_RCC_MSI_IsEnabledRangeSelect() || 1) { /* always check MSIPLLEN */ }
+          if ((RCC->CR & RCC_CR_MSIPLLEN) == 0)
+          {
+            LL_RCC_LSE_Enable();
+            while (LL_RCC_LSE_IsReady() != 1) { }
+            LL_RCC_MSI_EnablePLLMode();
+          }
+          else
+          {
+            LL_RCC_MSI_DisablePLLMode();
+            LL_RCC_LSE_Disable();
+          }
+          break;
 
-  LL_PWR_EnableBkUpAccess();
+        case 5:
+          /* STOP0 */
+          LL_PWR_SetPowerMode(LL_PWR_MODE_STOP0);
+          LL_LPM_EnableDeepSleep();
+          __WFI();
+          break;
 
-  NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+        case 6:
+          /* STOP1 */
+          LL_PWR_SetPowerMode(LL_PWR_MODE_STOP1);
+          LL_LPM_EnableDeepSleep();
+          __WFI();
+          break;
 
-  // config GPIO
-  GPIO_init();
-  //config clock
-  SystemClock_Config_80M();
-  //config bus SPI1 (pour la communication avec le transceiver nRF24L01)
-  SPI1_Init();
-  //config USART2
-  USART2_Init();
+        case 7:
+          /* STOP2 */
+          LL_PWR_SetPowerMode(LL_PWR_MODE_STOP2);
+          LL_LPM_EnableDeepSleep();
+          __WFI();
+          break;
 
-  // config systick avec interrupt
-  mySystick( SystemCoreClock / 100 );	// 100 Hz --> 10 ms
+        case 8:
+          /* SHUTDOWN */
+          LL_PWR_SetPowerMode(LL_PWR_MODE_SHUTDOWN);
+          LL_LPM_EnableDeepSleep();
+          __WFI();
+          break;
 
-  Button_EXTI_Config();
-
-  expe = LL_RTC_BAK_GetRegister(RTC, LL_RTC_BKP_DR0);
+        default:
+          break;
+      }
+    }
+  }
   if (expe == 0){
 	  expe = 1;
 	  LL_RTC_BAK_SetRegister(RTC, LL_RTC_BKP_DR0, expe);
