@@ -80,7 +80,7 @@ int main(void)
 	  LL_RTC_BAK_SetRegister(RTC, LL_RTC_BKP_DR0, expe);
   }
 
-  switch (expe) {
+  switch (expe) {	//TEST
 	  case 1:
 		  // Code pour expe == 1
 		  RCC->ICSCR &= ~RCC_ICSCR_MSIRANGE;                 // Clear le champ MSIRANGE
