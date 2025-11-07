@@ -67,6 +67,31 @@ void _flavien_PLL_80Mhz(void)
 	while( ((RCC->CFGR >> 2) & 0x3) != 0x3); //Set and cleared by hardware to indicate which clock source is used as system clock.
 }
 
+//for 80Mhz frequency
+void _flavien_voltage_scaling_1(void)
+{
+	// Program the VOS bits to “01” in the PWR_CR1 register.
+	PWR->CR1 = (PWR->CR1 & ~(0x3 << 9)) | (0x1 << 9); // clearing VOS field + setting the value 01 in VOS field
+	// Wait until the VOSF flag is cleared in the PWR_SR2 register.
+	while ( ( (PWR->SR2 >> 10) & 0x1) != 0); // waiting for the voltage range to be set
+	// Adjust number of wait states according new frequency target in Range 1 (LATENCY bits in the FLASH_ACR).
+	FLASH->ACR &= ~(0x7); // clearing LATENCY field
+	FLASH->ACR |= 0x4; // setting LATENCY field to 100b (four wait state) according that 80MHz is the frequency
+	// Increase the system frequency...
+}
+
+//for 80Mhz frequency
+void _flavien_voltage_scaling_2(void)
+{
+	// Program the VOS bits to “10” in the PWR_CR1 register.
+	PWR->CR1 = (PWR->CR1 & ~(0x3 << 9)) | (0x2 << 9);
+	// Wait until the VOSF flag is cleared in the PWR_SR2 register.
+	while ( ( (PWR->SR2 >> 10) & 0x1) != 0); // waiting for the voltage range to be set
+	// Adjust number of wait states according new frequency target in Range 1 (LATENCY bits in the FLASH_ACR).
+	FLASH->ACR &= ~(0x7); // clearing LATENCY field
+	FLASH->ACR |= 0x4; // setting LATENCY field to 100b (four wait state) according that 80MHz is the frequency
+	// Increase the system frequency...
+}
 
 int main(void)
 {
@@ -114,6 +139,8 @@ int main(void)
   //expe = 1;
   _flavien_MSI_4Mhz();
   _flavien_PLL_80Mhz();
+  _flavien_voltage_scaling_1();
+
 
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!********!!!!!!!!!!!!
 
