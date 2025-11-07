@@ -37,6 +37,36 @@ volatile int blue_mode = 0; //pour savoir si on est dans le mode "Blue mode"
 volatile int old_blue = 0;
 uint32_t expe = 0; //pour la sauvegarde du numéro de l'expérience
 
+void _flavien_MSI_4Mhz(void)
+{
+	RCC->CR &= ~0x000000F0; // MSIRANGE
+	RCC->CR |= 0x6 << 4; 	// 4Mhz
+	RCC->CR |= 0x1 << 3;	//MSIREGSEL = 1
+}
+
+void _flavien_PLL_80Mhz(void)
+{
+	RCC->CFGR &= ~(0x3); //  00: MSI oscillator used as system clock
+	while( (RCC->CFGR >> 2 & 0x3) != 0x0); //Set and cleared by hardware to indicate which clock source is used as system clock.
+	// Disable the PLL by setting PLLON to 0
+	RCC->CR &= ~(0x1 << 24);
+	// Wait until PLLRDY is cleared. The PLL is now fully stopped
+	while((RCC->CR >> 25) & 0x1);
+	// Change the desired parameter
+	RCC->PLLCFGR &= ~(0x7F << 8); // clearing PLLN
+	RCC->PLLCFGR |= (20 << 8); 	// PLLN = 20
+
+	RCC->PLLCFGR &= ~(0x7 << 4); // clearing PLLM (PLLM = 1)
+	// Enable the PLL again by setting PLLON to 1.
+	RCC->CR |= 0x1 << 24;
+	// Enable the desired PLL outputs by configuring PLLPEN, PLLQEN, PLLREN
+	RCC->PLLCFGR |= 0x1 << 24; // PLLREN = 1 (PLLCLK output enable)
+	while ( ((RCC->CR >> 25) & 0x1) != 0x1) ; // wait for the PLL to be locked
+
+	RCC->CFGR |= 0x3; //   11: PLL selected as system clock
+	while( ((RCC->CFGR >> 2) & 0x3) != 0x3); //Set and cleared by hardware to indicate which clock source is used as system clock.
+}
+
 
 int main(void)
 {
@@ -80,52 +110,57 @@ int main(void)
 	  LL_RTC_BAK_SetRegister(RTC, LL_RTC_BKP_DR0, expe);
   }
 
-  switch (expe) {	//TEST
-	  case 1:
-		  // Code pour expe == 1
-		  SystemClock_Config_MSI_4M();		// MSI à 4 Mhz
-		  SystemClock_Enable_PLL_80M();		// PLL à 80 Mhz
-		  Configure_VoltageScaling(1);
-		  Configure_FlashLatency(4);
-		  Disable_MSI_LSE_Calibration();
-		  break;
-	  case 2:
-		  SystemClock_Config_MSI_24M();		// MSI à 24 MHz
-		  SystemClock_Disable_PLL();		// PLL désactivée
-		  Configure_VoltageScaling(1);
-		  Configure_FlashLatency(1);
-		  Disable_MSI_LSE_Calibration();
-		  break;
-	  case 3:
-		  // Code pour expe == 3
-		  SystemClock_Config_MSI_24M();		// MSI à 24 MHz
-		  SystemClock_Disable_PLL();		// PLL désactivée
-		  Configure_VoltageScaling(2);
-		  Configure_FlashLatency(3);
-		  Disable_MSI_LSE_Calibration();
-		  break;
-	  case 4:
-		  // Code pour expe == 4
-		  break;
-	  case 5:
-		  // Code pour expe == 5
-		  break;
-	  case 6:
-		  // Code pour expe == 6
-		  break;
-	  case 7:
-		  // Code pour expe == 7
-		  break;
-	  case 8:
-		  // Code pour expe == 8
-		  break;
-	  default:
-		  // Code si expe n’est pas entre 1 et 8
-		  break;
+  // ATTENTION À SUPPRIMER !!!!!!!!!!!!
+  //expe = 1;
+  _flavien_MSI_4Mhz();
+  _flavien_PLL_80Mhz();
+
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!********!!!!!!!!!!!!
 
 
-
-  }
+//  switch (expe) {	//TEST
+//	  case 1:
+//		  // Code pour expe == 1
+//		  SystemClock_Config_MSI_4M();		// MSI à 4 Mhz
+//		  SystemClock_Enable_PLL_80M();		// PLL à 80 Mhz
+//		  Configure_VoltageScaling(1);
+//		  Configure_FlashLatency(4);
+//		  Disable_MSI_LSE_Calibration();
+//		  break;
+//	  case 2:
+//		  SystemClock_Config_MSI_24M();		// MSI à 24 MHz
+//		  SystemClock_Disable_PLL();		// PLL désactivée
+//		  Configure_VoltageScaling(1);
+//		  Configure_FlashLatency(1);
+//		  Disable_MSI_LSE_Calibration();
+//		  break;
+//	  case 3:
+//		  // Code pour expe == 3
+//		  SystemClock_Config_MSI_24M();		// MSI à 24 MHz
+//		  SystemClock_Disable_PLL();		// PLL désactivée
+//		  Configure_VoltageScaling(2);
+//		  Configure_FlashLatency(3);
+//		  Disable_MSI_LSE_Calibration();
+//		  break;
+//	  case 4:
+//		  // Code pour expe == 4
+//		  break;
+//	  case 5:
+//		  // Code pour expe == 5
+//		  break;
+//	  case 6:
+//		  // Code pour expe == 6
+//		  break;
+//	  case 7:
+//		  // Code pour expe == 7
+//		  break;
+//	  case 8:
+//		  // Code pour expe == 8
+//		  break;
+//	  default:
+//		  // Code si expe n’est pas entre 1 et 8
+//		  break;
+//  }
 
   while (1)
   {
