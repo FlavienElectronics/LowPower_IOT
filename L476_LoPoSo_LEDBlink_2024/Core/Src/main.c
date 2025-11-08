@@ -179,7 +179,6 @@ int main(void)
   _flavien_flash_latency(4);
   _flavien_calibration_MSI_vs_LSE();
   _flavien_set_stop_mode(1);
-  _flavien_set_stop_mode(2);
 
 
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!********!!!!!!!!!!!!
@@ -231,15 +230,6 @@ int main(void)
 
   while (1)
   {
-	  switch (expe)
-	  {
-		  case 1:
-		  if (blue_mode)
-		  {
-			  _flavien_sleep_100Hz_ON();
-		  }
-		  break;
-	  }
 
   }
 }
@@ -315,6 +305,11 @@ void Button_EXTI_Config(void)
     // 4. Configurer NVIC (EXTI15_10 gère les lignes 10 à 15)
     NVIC_SetPriority(EXTI15_10_IRQn, 2);
     NVIC_EnableIRQ(EXTI15_10_IRQn);
+}
+
+void TIM2_IRQHandler(void)
+{
+    TIM2->SR &= ~TIM_SR_UIF;  // clear interrupt flag
 }
 
 // 5. ISR pour EXTI lignes 10 à 15
