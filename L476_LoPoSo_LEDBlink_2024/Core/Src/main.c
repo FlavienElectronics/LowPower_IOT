@@ -107,6 +107,11 @@ void _flavien_calibration_MSI_vs_LSE(void)
 	RCC->CR |= 0x1 << 2; // MSIPLLEN = 1
 }
 
+void _flavien_sleep_100Hz_ON(void)
+{
+	__WFI();
+}
+
 
 int main(void)
 {
@@ -158,6 +163,7 @@ int main(void)
   _flavien_flash_latency(4);
   _flavien_calibration_MSI_vs_LSE();
 
+
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!********!!!!!!!!!!!!
 
 
@@ -207,6 +213,15 @@ int main(void)
 
   while (1)
   {
+	  switch (expe)
+	  {
+		  case 1:
+		  if (blue_mode)
+		  {
+			  _flavien_sleep_100Hz_ON();
+		  }
+		  break;
+	  }
 
   }
 }
