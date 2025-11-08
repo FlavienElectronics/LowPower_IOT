@@ -2923,7 +2923,6 @@ int main(void)
  80012b0:	f7ff fe55 	bl	8000f5e <LL_RTC_BAK_SetRegister>
   }
 
-
   if (BLUE_BUTTON()){
  80012b4:	f7ff fc7c 	bl	8000bb0 <BLUE_BUTTON>
  80012b8:	4603      	mov	r3, r0

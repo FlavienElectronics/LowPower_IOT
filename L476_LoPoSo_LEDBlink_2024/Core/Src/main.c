@@ -163,7 +163,6 @@ int main(void)
 	  LL_RTC_BAK_SetRegister(RTC, LL_RTC_BKP_DR0, expe);
   }
 
-
   if (BLUE_BUTTON()){
 	  expe += 1;
 	  if (expe > 8){
