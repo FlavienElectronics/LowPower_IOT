@@ -93,6 +93,21 @@ void _flavien_voltage_scaling_2(void)
 	// Increase the system frequency...
 }
 
+void _flavien_flash_latency(uint8_t latency)
+{
+	if (latency > 4) return;
+	FLASH->ACR &= ~(0x7); // clearing LATENCY field
+	FLASH->ACR |= latency;
+}
+
+void _flavien_calibration_MSI_vs_LSE(void)
+{
+	RCC->BDCR |= 0x1; // LSE ocillator ON (LSEON)
+	while ( !((RCC->BDCR >> 1) & 0x1) ); // waiting for LSERDY to be == 1
+	RCC->CR |= 0x1 << 2; // MSIPLLEN = 1
+}
+
+
 int main(void)
 {
 
@@ -140,7 +155,8 @@ int main(void)
   _flavien_MSI_4Mhz();
   _flavien_PLL_80Mhz();
   _flavien_voltage_scaling_1();
-
+  _flavien_flash_latency(4);
+  _flavien_calibration_MSI_vs_LSE();
 
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!********!!!!!!!!!!!!
 
