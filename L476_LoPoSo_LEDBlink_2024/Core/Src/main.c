@@ -121,7 +121,7 @@ void _flavien_sleep_100Hz_ON(void)
 void _flavien_set_stop_mode(uint8_t mode)
 {
 	if (mode > 4)return;
-	PWR->CR1 &= 0x7; // Clearing the LPMS field
+	PWR->CR1 &= ~(0x7); // Clearing the LPMS field
 	if ( ( (PWR->CR1 >> 14) & 0x1 ) && ( mode == 2 ) ) // Checking if LPR = 1 and mode 2 selected
 	{
 		mode = 1;	//  If LPR bit is set, Stop 2 mode cannot be selected and Stop 1 mode shall be entered instead of Stop 2.
@@ -180,6 +180,7 @@ int main(void)
   _flavien_flash_latency(4);
   _flavien_calibration_MSI_vs_LSE();
   _flavien_set_stop_mode(1);
+  _flavien_set_stop_mode(2);
 
 
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!********!!!!!!!!!!!!
