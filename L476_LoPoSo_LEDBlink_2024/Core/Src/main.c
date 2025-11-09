@@ -42,6 +42,16 @@ void _flavien_MSI_4Mhz(void)
 	RCC->CR &= ~0x000000F0; // MSIRANGE
 	RCC->CR |= 0x6 << 4; 	// 4Mhz
 	RCC->CR |= 0x1 << 3;	//MSIREGSEL = 1
+	RCC->CFGR &= ~(0x3); //  00: MSI oscillator used as system clock
+	while( (RCC->CFGR >> 2 & 0x3) != 0x0); //Set and cleared by hardware to indicate which clock source is used as system clock.
+}
+
+void _flavien_MSI_24Mhz(void)
+{
+	RCC->CR = ((RCC->CR & ~(0xF)) | 0x9); // MSIRANGE = 1001b = 0x9 = 24Mhz
+	RCC->CR |= (0x1 << 3); // MSIREGSEL = 1
+	RCC->CFGR &= ~(0x3); //  00: MSI oscillator used as system clock
+	while( (RCC->CFGR >> 2 & 0x3) != 0x0); //Set and cleared by hardware to indicate which clock source is used as system clock.
 }
 
 void _flavien_PLL_80Mhz(void)
@@ -65,6 +75,16 @@ void _flavien_PLL_80Mhz(void)
 
 	RCC->CFGR |= 0x3; //   11: PLL selected as system clock
 	while( ((RCC->CFGR >> 2) & 0x3) != 0x3); //Set and cleared by hardware to indicate which clock source is used as system clock.
+}
+
+void _flavien_PLL_off(void)
+{
+	RCC->CFGR &= ~(0x3); //  00: MSI oscillator used as system clock
+	while( (RCC->CFGR >> 2 & 0x3) != 0x0); //Set and cleared by hardware to indicate which clock source is used as system clock.
+	// Disable the PLL by setting PLLON to 0
+	RCC->CR &= ~(0x1 << 24); // PLLON = 0
+	// Wait until PLLRDY is cleared. The PLL is now fully stopped
+	while((RCC->CR >> 25) & 0x1); // PLLRDY
 }
 
 //for 80Mhz frequency
@@ -235,6 +255,8 @@ int main(void)
 //		  break;
 //  }
 
+  expe = 2; // +++++++++++++++++++++++++++++++++++++++++++++++++ATTENTION VVVVV POUR TESTER (A SUPPRIMER)
+
     switch (expe) {	//FLAVIEN LE TROUBLE
   	  case 1:
   		  // Code pour expe == 1
@@ -267,6 +289,9 @@ int main(void)
   		   * Sleep (100Hz) = off
   		   * Transceiver = Stand-by I
   		   */
+  		_flavien_MSI_24Mhz();
+  		_flavien_PLL_off();
+
 
 
   		  break;
