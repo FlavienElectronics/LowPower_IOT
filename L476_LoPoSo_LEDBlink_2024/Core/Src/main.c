@@ -23,6 +23,7 @@
  */
 
 // CODE A TESTER *--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*+++++++
+#define FAST_BLINK_LED
 
 #include "main.h"
 #include "gpio.h"
@@ -645,12 +646,18 @@ void SysTick_Handler()
 		}
 	else 	old_blue = 0;
 
+#ifndef FAST_BLINK_LED
 	//gestion de l'allumage de la LED
 	subticks = ticks % 200;
+#else
+	subticks = ticks % 100;
+#endif
 	if	( subticks == 0 )
 		LED_GREEN(1);
 	else if	( subticks == 15*expe )
 		LED_GREEN(0);
+
+
 
 #ifndef JAIPASLETRANSCEIVER
 	// PARTIE TRANSCEIVER -------------------------------------------------------
