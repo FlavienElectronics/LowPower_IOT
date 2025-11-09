@@ -294,7 +294,7 @@ int main(void)
 //		  break;
 //  }
 
-  expe = 5; // +++++++++++++++++++++++++++++++++++++++++++++++++ATTENTION VVVVV POUR TESTER (A SUPPRIMER)
+  //expe = 5; // +++++++++++++++++++++++++++++++++++++++++++++++++ATTENTION VVVVV POUR TESTER (A SUPPRIMER)
 
     switch (expe) {	//FLAVIEN LE TROUBLE
   	  case 1:
@@ -416,6 +416,15 @@ int main(void)
   		   * STOP1, wakeup 7s (when blue button)
   		   * Transceiver = Power-down
   		   */
+  		_flavien_PLL_off();
+  		_flavien_MSI_24Mhz();
+  		_flavien_voltage_scaling_2();
+  		_flavien_flash_latency(3);
+  		Enable_MSI_LSE_Calibration();
+  		// Transceiver ?
+  		// Stop mode dans la routine d'interruption
+  		Enter_Sleep_100Hz();
+
   		  break;
   	  case 7:
   		  // Code pour expe == 7
@@ -429,6 +438,14 @@ int main(void)
   		   * STOP2, wakeup 7s (when blue button)
   		   * Transceiver = Power-down
   		   */
+    		_flavien_PLL_off();
+    		_flavien_MSI_24Mhz();
+    		_flavien_voltage_scaling_2();
+    		_flavien_flash_latency(3);
+    		Enable_MSI_LSE_Calibration();
+    		// Transceiver ?
+    		// Stop mode dans la routine d'interruption
+    		Enter_Sleep_100Hz();
   		  break;
   	  case 8:
   		  // Code pour expe == 8
@@ -442,6 +459,14 @@ int main(void)
   		   * SHUTDOWN, wakeup 7s (when blue button)
   		   * Transceiver = Power-down
   		   */
+  		_flavien_PLL_off();
+  		_flavien_MSI_24Mhz();
+  		_flavien_voltage_scaling_2();
+  		_flavien_flash_latency(3);
+  		Enable_MSI_LSE_Calibration();
+  		// Transceiver ?
+  		// Stop mode dans la routine d'interruption
+  		Enter_Sleep_100Hz();
   		  break;
   	  default:
   		  // Code si expe n’est pas entre 1 et 8
@@ -575,12 +600,15 @@ void EXTI15_10_IRQHandler(void)
         		RTC_wakeup_init_from_stop(7);
         		break;
         	case 6:
+        		_flavien_set_stop_mode(1);
         		RTC_wakeup_init_from_stop(7);
         		break;
         	case 7:
+        		_flavien_set_stop_mode(2);
         		RTC_wakeup_init_from_stop(7);
         		break;
         	case 8:
+        		_flavien_set_stop_mode(3);
         		RTC_wakeup_init_from_standby_or_shutdown(7);
         		break;
 		    default:
