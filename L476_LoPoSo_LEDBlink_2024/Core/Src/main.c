@@ -107,6 +107,13 @@ void _flavien_calibration_MSI_vs_LSE(void)
 	RCC->CR |= 0x1 << 2; // MSIPLLEN = 1
 }
 
+/*Fonction inutile probablement... */
+void _flavien_calibration_MSI_vs_LSE_off(void)
+{
+	RCC->BDCR &= ~(0x1); // LSE ocillator OFF (clear LSEON)
+	RCC->CR &= ~(0x1 << 2); // Clearing MSIPLLEN
+}
+
 void _flavien_sleep_100Hz_ON(void)
 {
 	__WFI();
@@ -173,12 +180,12 @@ int main(void)
 
   // ATTENTION À SUPPRIMER !!!!!!!!!!!!
   //expe = 1;
-  _flavien_MSI_4Mhz();
-  _flavien_PLL_80Mhz();
-  _flavien_voltage_scaling_1();
-  _flavien_flash_latency(4);
-  _flavien_calibration_MSI_vs_LSE();
-  _flavien_set_stop_mode(1);
+//  _flavien_MSI_4Mhz();
+//  _flavien_PLL_80Mhz();
+//  _flavien_voltage_scaling_1();
+//  _flavien_flash_latency(4);
+//  _flavien_calibration_MSI_vs_LSE();
+//  _flavien_set_stop_mode(1);
 
 
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!********!!!!!!!!!!!!
@@ -240,6 +247,13 @@ int main(void)
   		   * Sleep (100Hz) = off -> on (when blue button)
   		   * Transceiver = Stand-by I
   		   */
+  		_flavien_MSI_4Mhz();
+  		_flavien_PLL_80Mhz();
+  		_flavien_voltage_scaling_1();
+  		_flavien_flash_latency(4);
+  		_flavien_calibration_MSI_vs_LSE_off();
+  		//Sleep OK dans la routine d'interruption
+  		// Transceiver ?
 
   		  break;
   	  case 2:
@@ -253,6 +267,7 @@ int main(void)
   		   * Sleep (100Hz) = off
   		   * Transceiver = Stand-by I
   		   */
+
 
   		  break;
   	  case 3:
@@ -436,7 +451,7 @@ void EXTI15_10_IRQHandler(void)
         	blue_mode = 0;
         }
 
-        switch (expe) {		// changement de config specifique au blu mode
+        switch (expe) {		// changement de config specifique au blue mode
         	case 1:
         		if (blue_mode == 1){
         			Enter_Sleep_100Hz();
