@@ -114,7 +114,7 @@ void _flavien_voltage_scaling_1(void)
 	// Program the VOS bits to “01” in the PWR_CR1 register.
 	PWR->CR1 = (PWR->CR1 & ~(0x3 << 9)) | (0x1 << 9); // clearing VOS field + setting the value 01 in VOS field
 	// Wait until the VOSF flag is cleared in the PWR_SR2 register.
-	while ( ( (PWR->SR2 >> 10) & 0x1) != 0); // waiting for the voltage range to be set
+	while ( ( (PWR->SR2 >> 10) & 0x1) != 0); // waiting for the voltage range to be set (VOSF = 1)
 	// Adjust number of wait states according new frequency target in Range 1 (LATENCY bits in the FLASH_ACR).
 	FLASH->ACR &= ~(0x7); // clearing LATENCY field
 	FLASH->ACR |= 0x4; // setting LATENCY field to 100b (four wait state) according that 80MHz is the frequency
@@ -125,9 +125,9 @@ void _flavien_voltage_scaling_1(void)
 void _flavien_voltage_scaling_2(void)
 {
 	// Program the VOS bits to “10” in the PWR_CR1 register.
-	PWR->CR1 = (PWR->CR1 & ~(0x3 << 9)) | (0x2 << 9);
+	PWR->CR1 = (PWR->CR1 & ~(0x3 << 9)) | (0x2 << 9); // VOS = 10b = range 2
 	// Wait until the VOSF flag is cleared in the PWR_SR2 register.
-	while ( ( (PWR->SR2 >> 10) & 0x1) != 0); // waiting for the voltage range to be set
+	while ( ( (PWR->SR2 >> 10) & 0x1) != 0); // waiting for the voltage range to be set (VOSF = 0 -> OK)
 	// Adjust number of wait states according new frequency target in Range 1 (LATENCY bits in the FLASH_ACR).
 	FLASH->ACR &= ~(0x7); // clearing LATENCY field
 	FLASH->ACR |= 0x4; // setting LATENCY field to 100b (four wait state) according that 80MHz is the frequency
@@ -177,6 +177,7 @@ void _flavien_set_stop_mode(uint8_t mode)
 	PWR->CR1 |= mode; // Setting the selected mode into LPMS field
 }
 
+#define JAIPASLETRANSCEIVER
 
 int main(void)
 {
@@ -199,6 +200,23 @@ int main(void)
   SPI1_Init();
   //config USART2
   USART2_Init();
+
+#ifndef JAIPASLETRANSCEIVER
+  //configuration du transceiver en mode PTX
+  Init_Transceiver();
+  Config_RF_channel(channel_nb,nRF24_DR_250kbps,nRF24_TXPWR_6dBm);
+  Config_CRC(CRC_Field_On, CRC_Field_1byte);
+  //Adresse sur 5 bits. Transmission sur le data pipe adr_data_pipe_used.
+  Config_PTX_adress(5,Default_pipe_address,adr_data_pipe_used,nRF24_AA_ON);
+  Config_ESB_Protocol(nRF24_ARD_1000us,10);
+  //on sort du mode power down
+  nRF24_SetPowerMode(nRF24_PWR_UP);
+  Delay_ms(2); //Attente 2 ms (1.5 ms pour la sortie du mode power down).
+
+  //Entrée en mode TX
+  nRF24_SetOperationalMode(nRF24_MODE_TX);
+  StopListen();
+#endif
 
   // config systick avec interrupt
   mySystick( SystemCoreClock / 100 );	// 100 Hz --> 10 ms
@@ -276,7 +294,7 @@ int main(void)
 //		  break;
 //  }
 
-  expe = 2; // +++++++++++++++++++++++++++++++++++++++++++++++++ATTENTION VVVVV POUR TESTER (A SUPPRIMER)
+  expe = 3; // +++++++++++++++++++++++++++++++++++++++++++++++++ATTENTION VVVVV POUR TESTER (A SUPPRIMER)
 
     switch (expe) {	//FLAVIEN LE TROUBLE
   	  case 1:
@@ -331,6 +349,13 @@ int main(void)
   		   * Sleep (100Hz) = off -> on (when blue button)
   		   * Transceiver = Stand-by I
   		   */
+  		_flavien_PLL_off(); // A faire avant de modifier MSI
+  		_flavien_MSI_24Mhz();
+  		_flavien_voltage_scaling_2();
+  		_flavien_flash_latency(3);
+  		_flavien_calibration_MSI_vs_LSE_off();
+  		//Sleep OK dans la routine d'interruption
+  		// Transceiver ?
 
   		  break;
   	  case 4:
@@ -577,7 +602,7 @@ void SysTick_Handler()
 	else if	( subticks == 15*expe )
 		LED_GREEN(0);
 
-
+#ifndef JAIPASLETRANSCEIVER
 	// PARTIE TRANSCEIVER -------------------------------------------------------
 	uint8_t i;
 
@@ -607,6 +632,7 @@ void SysTick_Handler()
 	else {
 		cptr_transmit ++;
 	}
+#endif
 }
 
 /**
