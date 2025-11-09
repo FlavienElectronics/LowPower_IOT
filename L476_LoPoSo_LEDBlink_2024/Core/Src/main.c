@@ -294,7 +294,7 @@ int main(void)
 //		  break;
 //  }
 
-  expe = 3; // +++++++++++++++++++++++++++++++++++++++++++++++++ATTENTION VVVVV POUR TESTER (A SUPPRIMER)
+  expe = 5; // +++++++++++++++++++++++++++++++++++++++++++++++++ATTENTION VVVVV POUR TESTER (A SUPPRIMER)
 
     switch (expe) {	//FLAVIEN LE TROUBLE
   	  case 1:
@@ -315,6 +315,7 @@ int main(void)
   		_flavien_calibration_MSI_vs_LSE_off();
   		//Sleep OK dans la routine d'interruption
   		// Transceiver ?
+  		Exit_Sleep_100Hz();
 
   		  break;
   	  case 2:
@@ -335,6 +336,7 @@ int main(void)
   		// Calibration OK dans la routine d'interruption
   		// Pas de sleep
   		// Transceiver ?
+  		Exit_Sleep_100Hz();
 
 
   		  break;
@@ -356,6 +358,7 @@ int main(void)
   		_flavien_calibration_MSI_vs_LSE_off();
   		//Sleep OK dans la routine d'interruption
   		// Transceiver ?
+  		Exit_Sleep_100Hz();
 
   		  break;
   	  case 4:
@@ -369,6 +372,14 @@ int main(void)
   		   * Sleep (100Hz) = off
   		   * Transceiver = Stand-by I
   		   */
+  		_flavien_PLL_off();
+  		_flavien_MSI_24Mhz();
+  		_flavien_voltage_scaling_2();
+  		_flavien_flash_latency(3);
+  		// Calibration OK dans la routine d'interruption
+  		// Transceiver ?
+  		Exit_Sleep_100Hz();
+
   		  break;
   	  case 5:
   		  // Code pour expe == 5
@@ -382,6 +393,16 @@ int main(void)
   		   * STOP0, wakeup 7s (when blue button)
   		   * Transceiver = Power-down
   		   */
+    		_flavien_PLL_off();
+    		_flavien_MSI_24Mhz();
+    		_flavien_voltage_scaling_2();
+    		_flavien_flash_latency(3);
+    		Enable_MSI_LSE_Calibration();
+    		// Transceiver ?
+    		// Stop mode dans la routine d'interruption
+    		Enter_Sleep_100Hz();
+
+
   		  break;
   	  case 6:
   		  // Code pour expe == 6
@@ -550,6 +571,7 @@ void EXTI15_10_IRQHandler(void)
         		Enable_MSI_LSE_Calibration();
         		break;
         	case 5:
+        		_flavien_set_stop_mode(0);
         		RTC_wakeup_init_from_stop(7);
         		break;
         	case 6:
