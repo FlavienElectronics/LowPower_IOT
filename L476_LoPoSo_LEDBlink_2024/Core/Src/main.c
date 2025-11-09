@@ -228,9 +228,119 @@ int main(void)
 //		  break;
 //  }
 
+    switch (expe) {	//FLAVIEN LE TROUBLE
+  	  case 1:
+  		  // Code pour expe == 1
+  		  /*
+  		   * MSI = 4 Mhz
+  		   * PLL = 80 Mhz
+  		   * Voltage scaling = 1
+  		   * Flash latency = 4
+  		   * Calibration MSI vs LSE = off
+  		   * Sleep (100Hz) = off -> on (when blue button)
+  		   * Transceiver = Stand-by I
+  		   */
+
+  		  break;
+  	  case 2:
+  		// Code pour expe == 2
+  		  /*
+  		   * MSI = 24 Mhz
+  		   * PLL = off
+  		   * Voltage scaling = 1
+  		   * Flash latency = 1
+  		   * Calibration MSI vs LSE = off -> on (when blue button)
+  		   * Sleep (100Hz) = off
+  		   * Transceiver = Stand-by I
+  		   */
+
+  		  break;
+  	  case 3:
+  		  // Code pour expe == 3
+  		  /*
+  		   * MSI = 24 Mhz
+  		   * PLL = off
+  		   * Voltage scaling = 2
+  		   * Flash latency = 3
+  		   * Calibration MSI vs LSE = off
+  		   * Sleep (100Hz) = off -> on (when blue button)
+  		   * Transceiver = Stand-by I
+  		   */
+
+  		  break;
+  	  case 4:
+  		  // Code pour expe == 4
+  		  /*
+  		   * MSI = 24 Mhz
+  		   * PLL = off
+  		   * Voltage scaling = 2
+  		   * Flash latency = 3
+  		   * Calibration MSI vs LSE = off -> on (when blue button)
+  		   * Sleep (100Hz) = off
+  		   * Transceiver = Stand-by I
+  		   */
+  		  break;
+  	  case 5:
+  		  // Code pour expe == 5
+  		  /*
+  		   * MSI = 24 Mhz
+  		   * PLL = off
+  		   * Voltage scaling = 2
+  		   * Flash latency = 3
+  		   * Calibration MSI vs LSE = on
+  		   * Sleep (100Hz) = on
+  		   * STOP0, wakeup 7s (when blue button)
+  		   * Transceiver = Power-down
+  		   */
+  		  break;
+  	  case 6:
+  		  // Code pour expe == 6
+  		  /*
+  		   * MSI = 24 Mhz
+  		   * PLL = off
+  		   * Voltage scaling = 2
+  		   * Flash latency = 3
+  		   * Calibration MSI vs LSE = on
+  		   * Sleep (100Hz) = on
+  		   * STOP1, wakeup 7s (when blue button)
+  		   * Transceiver = Power-down
+  		   */
+  		  break;
+  	  case 7:
+  		  // Code pour expe == 7
+  		  /*
+  		   * MSI = 24 Mhz
+  		   * PLL = off
+  		   * Voltage scaling = 2
+  		   * Flash latency = 3
+  		   * Calibration MSI vs LSE = on
+  		   * Sleep (100Hz) = on
+  		   * STOP2, wakeup 7s (when blue button)
+  		   * Transceiver = Power-down
+  		   */
+  		  break;
+  	  case 8:
+  		  // Code pour expe == 8
+  		  /*
+  		   * MSI = 24 Mhz
+  		   * PLL = off
+  		   * Voltage scaling = 2
+  		   * Flash latency = 3
+  		   * Calibration MSI vs LSE = on
+  		   * Sleep (100Hz) = on
+  		   * SHUTDOWN, wakeup 7s (when blue button)
+  		   * Transceiver = Power-down
+  		   */
+  		  break;
+  	  default:
+  		  // Code si expe n’est pas entre 1 et 8
+  		  break;
+    }
+
   while (1)
   {
-
+	  // Rien dans le while : gestion par interruption de l'appui sur le bouton bleu
+	  // Voir la fonction : «EXTI15_10_IRQHandler»
   }
 }
 
