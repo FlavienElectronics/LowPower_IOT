@@ -29,6 +29,8 @@
 #include "clock.h"
 #include "spi.h"
 #include "usart.h"
+#include "RadioFunctions.h"
+#include "nrf24.h"
 
 #include "stm32l4xx_ll_rtc.h"
 
@@ -36,6 +38,19 @@ volatile unsigned int ticks = 0; //pour la gestion des intervalles de temps. 1 t
 volatile int blue_mode = 0; //pour savoir si on est dans le mode "Blue mode"
 volatile int old_blue = 0;
 uint32_t expe = 0; //pour la sauvegarde du numéro de l'expérience
+
+// Partie transceiver RF
+#define taille_message 20
+
+uint8_t cptr = 0;
+uint8_t cptr_transmit = 1;
+uint8_t period_transmit = 5; //10; //période de retransmission du message en multiples de périodes de 100 ms (période
+//de débordement du Systick)
+
+const char entete_message[17] = "Emission paquet #";
+uint8_t Message[taille_message];
+uint8_t channel_nb = 60; //n° du canal radio utilisé (//channel 60 --> 2460 MHz)
+uint8_t adr_data_pipe_used = 1; //numéro du data pipe utilisé pour la transmission (de 0 à 5)
 
 void _flavien_MSI_4Mhz(void)
 {
@@ -561,6 +576,37 @@ void SysTick_Handler()
 		LED_GREEN(1);
 	else if	( subticks == 15*expe )
 		LED_GREEN(0);
+
+
+	// PARTIE TRANSCEIVER -------------------------------------------------------
+	uint8_t i;
+
+	if (cptr_transmit == period_transmit) {
+
+		//sortie du mode power down
+		nRF24_SetPowerMode(nRF24_PWR_UP);
+		//Delay_ms(2); //Attente 2 ms (1.5 ms pour la sortie du mode power down.
+		//En fait, on attend 200 ms car la base de temps du systick est 100 ms.
+		//LE test montre qu'on n'est pas obligé de mettre un délai. Le temps de compléter le tableau
+		//Message et le temps de transmettre sur l'UART prend au moins 5 ms.
+
+		//préparation du message à transmettre
+		for (i = 0; i < 17; i++) {
+			Message[i] = entete_message[i];
+		}
+		Message[17] = '_';
+		Message[18] = cptr;
+
+		Transmit_Message(Message,taille_message);
+		cptr++;
+		cptr_transmit = 1;
+
+		//retour dans le mode power down
+		nRF24_SetPowerMode(nRF24_PWR_DOWN);
+	}
+	else {
+		cptr_transmit ++;
+	}
 }
 
 /**
