@@ -78,6 +78,8 @@ void ReadMBReg(uint8_t reg, uint8_t *pBuf, uint8_t count) {
 // Set transceiver to it's initial state
 // note: RX/TX pipe addresses remains untouched
 void nRF24_Init(void) {
+	//MOdification ==========================================
+	 nRF24_CSN_L();
 	// Write to registers their initial values
 	nRF24_WriteReg(nRF24_REG_CONFIG, 0x08);
 	nRF24_WriteReg(nRF24_REG_EN_AA, 0x3F);
