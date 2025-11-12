@@ -178,7 +178,7 @@ void _flavien_set_stop_mode(uint8_t mode)
 	PWR->CR1 |= mode; // Setting the selected mode into LPMS field
 }
 
-//#define JAIPASLETRANSCEIVER
+#define JAIPASLETRANSCEIVER
 
 int main(void)
 {
@@ -202,7 +202,22 @@ int main(void)
   //config USART2
   USART2_Init();
 
+#ifndef JAIPASLETRANSCEIVER
+  //configuration du transceiver en mode PTX
+  Init_Transceiver();
+  Config_RF_channel(channel_nb,nRF24_DR_250kbps,nRF24_TXPWR_6dBm);
+  Config_CRC(CRC_Field_On, CRC_Field_1byte);
+  //Adresse sur 5 bits. Transmission sur le data pipe adr_data_pipe_used.
+  Config_PTX_adress(5,Default_pipe_address,adr_data_pipe_used,nRF24_AA_ON);
+  Config_ESB_Protocol(nRF24_ARD_1000us,10);
+  //on sort du mode power down
+  nRF24_SetPowerMode(nRF24_PWR_UP);
+  Delay_ms(2); //Attente 2 ms (1.5 ms pour la sortie du mode power down).
 
+  //Entrée en mode TX
+  nRF24_SetOperationalMode(nRF24_MODE_TX);
+  StopListen();
+#endif
 
   // config systick avec interrupt
   mySystick( SystemCoreClock / 100 );	// 100 Hz --> 10 ms
@@ -281,23 +296,6 @@ int main(void)
 //  }
 
   //expe = 5; // +++++++++++++++++++++++++++++++++++++++++++++++++ATTENTION VVVVV POUR TESTER (A SUPPRIMER)
-
-#ifndef JAIPASLETRANSCEIVER
-  //configuration du transceiver en mode PTX
-  Init_Transceiver();
-  Config_RF_channel(channel_nb,nRF24_DR_250kbps,nRF24_TXPWR_6dBm);
-  Config_CRC(CRC_Field_On, CRC_Field_1byte);
-  //Adresse sur 5 bits. Transmission sur le data pipe adr_data_pipe_used.
-  Config_PTX_adress(5,Default_pipe_address,adr_data_pipe_used,nRF24_AA_ON);
-  Config_ESB_Protocol(nRF24_ARD_1000us,10);
-  //on sort du mode power down
-  nRF24_SetPowerMode(nRF24_PWR_UP);
-  Delay_ms(2); //Attente 2 ms (1.5 ms pour la sortie du mode power down).
-
-  //Entrée en mode TX
-  nRF24_SetOperationalMode(nRF24_MODE_TX);
-  StopListen();
-#endif
 
     switch (expe) {	//FLAVIEN LE TROUBLE
   	  case 1:
@@ -654,10 +652,10 @@ void SysTick_Handler()
 #else
 	subticks = ticks % 100;
 #endif
-//	if	( subticks == 0 )
-//		LED_GREEN(1);
-//	else if	( subticks == 15*expe )
-//		LED_GREEN(0);
+	if	( subticks == 0 )
+		LED_GREEN(1);
+	else if	( subticks == 15*expe )
+		LED_GREEN(0);
 
 
 
