@@ -1,0 +1,11 @@
+../Core/Src/RadioFunctions.c:45:16:nRF24_TransmitPacket	24	static
+../Core/Src/RadioFunctions.c:103:6:Init_Transceiver	8	static
+../Core/Src/RadioFunctions.c:122:6:Config_RF_channel	16	static
+../Core/Src/RadioFunctions.c:141:6:Config_CRC	0	static
+../Core/Src/RadioFunctions.c:158:6:Config_PRX_adress	24	static
+../Core/Src/RadioFunctions.c:194:6:Config_PTX_adress	40	static
+../Core/Src/RadioFunctions.c:258:6:Config_ESB_Protocol	16	static
+../Core/Src/RadioFunctions.c:280:6:StartListen	0	static
+../Core/Src/RadioFunctions.c:287:6:StopListen	0	static
+../Core/Src/RadioFunctions.c:295:6:Continuous_RX_Listen	8	static
+../Core/Src/RadioFunctions.c:322:6:Transmit_Message	16	static

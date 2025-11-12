@@ -1,0 +1,10 @@
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:2362:26:LL_RCC_LSE_IsReady	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_cortex.h:321:22:LL_LPM_EnableDeepSleep	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_pwr.h:434:22:LL_PWR_SetPowerMode	1
+../Core/Src/main.c:40:13:RTC_wakeup_init	2
+../Core/Src/main.c:57:6:RTC_wakeup_init_from_standby_or_shutdown	1
+../Core/Src/main.c:68:6:RTC_wakeup_init_from_stop	1
+../Core/Src/main.c:96:5:main	27
+../Core/Src/main.c:260:6:SysTick_Handler	10
+../Core/Src/main.c:318:6:RTC_WKUP_IRQHandler	1
+../Core/Src/main.c:330:6:Error_Handler	1
