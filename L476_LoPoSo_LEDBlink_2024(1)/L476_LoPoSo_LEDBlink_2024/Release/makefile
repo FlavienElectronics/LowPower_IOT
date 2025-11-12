@@ -1,6 +1,6 @@
 ################################################################################
 # Automatically-generated file. Do not edit!
-# Toolchain: GNU Tools for STM32 (12.3.rel1)
+# Toolchain: GNU Tools for STM32 (13.3.rel1)
 ################################################################################
 
 -include ../makefile.init
@@ -60,8 +60,8 @@ all: main-build
 main-build: L476_LoPoSo_LEDBlink_2024.elf secondary-outputs
 
 # Tool invocations
-L476_LoPoSo_LEDBlink_2024.elf L476_LoPoSo_LEDBlink_2024.map: $(OBJS) $(USER_OBJS) C:\Users\simon\Desktop\L476_LoPoSo_LEDBlink_2024\STM32L476RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "L476_LoPoSo_LEDBlink_2024.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\simon\Desktop\L476_LoPoSo_LEDBlink_2024\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="L476_LoPoSo_LEDBlink_2024.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+L476_LoPoSo_LEDBlink_2024.elf L476_LoPoSo_LEDBlink_2024.map: $(OBJS) $(USER_OBJS) U:\Documents\5A\LowPowerIOT\LowPower_IOT\L476_LoPoSo_LEDBlink_2024(1)\L476_LoPoSo_LEDBlink_2024\STM32L476RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "L476_LoPoSo_LEDBlink_2024.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"U:\Documents\5A\LowPowerIOT\LowPower_IOT\L476_LoPoSo_LEDBlink_2024(1)\L476_LoPoSo_LEDBlink_2024\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="L476_LoPoSo_LEDBlink_2024.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

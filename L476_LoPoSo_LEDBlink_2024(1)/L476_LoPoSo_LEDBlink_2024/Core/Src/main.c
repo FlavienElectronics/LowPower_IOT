@@ -92,6 +92,99 @@ uint8_t Message[taille_message];
 uint8_t channel_nb = 60; //n° du canal radio utilisé (//channel 60 --> 2460 MHz)
 uint8_t adr_data_pipe_used = 1; //numéro du data pipe utilisé pour la transmission (de 0 à 5)
 
+void Button_EXTI_Config(void)
+{
+    LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTC, LL_SYSCFG_EXTI_LINE13);
+
+    // Configurer EXTI13 interruption front descendant
+    LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_13);
+    LL_EXTI_EnableFallingTrig_0_31(LL_EXTI_LINE_13);
+    LL_EXTI_DisableRisingTrig_0_31(LL_EXTI_LINE_13);
+
+    // 4. Configurer NVIC (EXTI15_10 gère les lignes 10 à 15)
+    NVIC_SetPriority(EXTI15_10_IRQn, 2);
+    NVIC_EnableIRQ(EXTI15_10_IRQn);
+}
+
+void EXTI15_10_IRQHandler(void)
+{
+	if (blue_mode == 0)
+		blue_mode = 1;
+
+	  if (blue_mode == 1){
+		  switch (expe) {
+		      case 1:
+		          LL_LPM_EnableSleep();
+		          blue_mode = 0;
+		          __WFI();
+		          break;
+
+		      case 2:
+		          while (LL_RCC_LSE_IsReady() != 1) {
+		              LL_RCC_LSE_Enable();
+		          }
+		          LL_RCC_MSI_EnablePLLMode();
+		          blue_mode = 0;
+		          break;
+
+		      case 3:
+		          LL_LPM_EnableSleep();
+		          blue_mode = 0;
+		          __WFI();
+		          break;
+
+		      case 4:
+		          while (LL_RCC_LSE_IsReady() != 1) {
+		              LL_RCC_LSE_Enable();
+		          }
+		          LL_RCC_MSI_EnablePLLMode();
+		          blue_mode = 0;
+		          break;
+
+		      case 5:
+		          RTC_wakeup_init_from_stop(7);
+		          LL_PWR_SetPowerMode(LL_PWR_MODE_STOP0);
+		          LL_LPM_EnableDeepSleep();
+		          __WFI();
+		          blue_mode = 0;
+		          break;
+
+		      case 6:
+		          RTC_wakeup_init_from_stop(7);
+		          LL_PWR_SetPowerMode(LL_PWR_MODE_STOP1);
+		          LL_LPM_EnableDeepSleep();
+		          __WFI();
+		          SystemClock_5_6_7_8();
+		          blue_mode = 0;
+		          break;
+
+		      case 7:
+		          RTC_wakeup_init_from_stop(7);
+		          LL_PWR_SetPowerMode(LL_PWR_MODE_STOP2);
+		          LL_LPM_EnableDeepSleep();
+		          __WFI();
+		          blue_mode = 0;
+		          break;
+
+		      case 8:
+		          RTC_wakeup_init_from_standby_or_shutdown(7);
+		          LL_PWR_SetPowerMode(LL_PWR_MODE_SHUTDOWN);
+		          LL_LPM_EnableDeepSleep();
+		          __WFI();
+		          blue_mode = 0;
+		          break;
+
+		      default:
+		          if (expe != 1 && expe != 2 && expe != 3 && expe != 4) {
+		              LL_LPM_EnableSleep();
+		              __WFI();
+		          }
+		          break;
+		  }
+	  }
+
+}
+
 
 int main(void)
 {
@@ -122,6 +215,8 @@ int main(void)
 	  LL_RTC_DisableInitMode(RTC);
 	  LL_RTC_EnableWriteProtection(RTC);
   }
+
+  Button_EXTI_Config();
   // config GPIO
   GPIO_init();
   //config bus SPI1
@@ -184,73 +279,7 @@ int main(void)
 
   while (1)
   {
-	  if (blue_mode == 1){
-		  switch (expe) {
-		      case 1:
-		          LL_LPM_EnableSleep();
-		          __WFI();
-		          break;
 
-		      case 2:
-		          while (LL_RCC_LSE_IsReady() != 1) {
-		              LL_RCC_LSE_Enable();
-		          }
-		          LL_RCC_MSI_EnablePLLMode();
-		          break;
-
-		      case 3:
-		          LL_LPM_EnableSleep();
-		          __WFI();
-		          break;
-
-		      case 4:
-		          while (LL_RCC_LSE_IsReady() != 1) {
-		              LL_RCC_LSE_Enable();
-		          }
-		          LL_RCC_MSI_EnablePLLMode();
-		          break;
-
-		      case 5:
-		          RTC_wakeup_init_from_stop(7);
-		          LL_PWR_SetPowerMode(LL_PWR_MODE_STOP0);
-		          LL_LPM_EnableDeepSleep();
-		          __WFI();
-		          blue_mode = 0;
-		          break;
-
-		      case 6:
-		          RTC_wakeup_init_from_stop(7);
-		          LL_PWR_SetPowerMode(LL_PWR_MODE_STOP1);
-		          LL_LPM_EnableDeepSleep();
-		          __WFI();
-		          SystemClock_5_6_7_8();
-		          blue_mode = 0;
-		          break;
-
-		      case 7:
-		          RTC_wakeup_init_from_stop(7);
-		          LL_PWR_SetPowerMode(LL_PWR_MODE_STOP2);
-		          LL_LPM_EnableDeepSleep();
-		          __WFI();
-		          blue_mode = 0;
-		          break;
-
-		      case 8:
-		          RTC_wakeup_init_from_standby_or_shutdown(7);
-		          LL_PWR_SetPowerMode(LL_PWR_MODE_SHUTDOWN);
-		          LL_LPM_EnableDeepSleep();
-		          __WFI();
-		          blue_mode = 0;
-		          break;
-
-		      default:
-		          if (expe != 1 && expe != 2 && expe != 3 && expe != 4) {
-		              LL_LPM_EnableSleep();
-		              __WFI();
-		          }
-		          break;
-		  }
-	  }
   }
 }
 
@@ -261,23 +290,6 @@ void SysTick_Handler()
 {
 	unsigned int subticks;
 	ticks += 1;
-
-	//scrutation bouton bleu
-	//passage au blue mode
-	if	( BLUE_BUTTON() )
-	{
-		if	( old_blue == 0 )
-		{
-			blue_mode = 1;
-		    old_blue = 1;
-		}
-	}
-	else
-	{
-		old_blue = 0;
-	}
-
-	while (BLUE_BUTTON()){}
 
 	//gestion de l'allumage de la LED
 	subticks = ticks % 200;

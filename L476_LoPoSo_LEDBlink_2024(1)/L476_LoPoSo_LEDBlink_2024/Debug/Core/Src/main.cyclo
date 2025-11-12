@@ -10,8 +10,11 @@
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:3714:22:LL_RCC_ReleaseBackupDomainReset	1
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_bus.h:1089:22:LL_APB1_GRP1_EnableClock	1
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_bus.h:1675:22:LL_APB2_GRP1_EnableClock	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_system.h:772:22:LL_SYSCFG_SetEXTISource	2
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_exti.h:306:22:LL_EXTI_EnableIT_0_31	1
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_exti.h:739:22:LL_EXTI_EnableRisingTrig_0_31	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_exti.h:805:22:LL_EXTI_DisableRisingTrig_0_31	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_exti.h:932:22:LL_EXTI_EnableFallingTrig_0_31	1
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_exti.h:1299:22:LL_EXTI_ClearFlag_0_31	1
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_cortex.h:310:22:LL_LPM_EnableSleep	1
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_cortex.h:321:22:LL_LPM_EnableDeepSleep	1
@@ -37,7 +40,9 @@
 ../Core/Src/main.c:40:13:RTC_wakeup_init	2
 ../Core/Src/main.c:57:6:RTC_wakeup_init_from_standby_or_shutdown	1
 ../Core/Src/main.c:68:6:RTC_wakeup_init_from_stop	1
-../Core/Src/main.c:96:5:main	27
-../Core/Src/main.c:260:6:SysTick_Handler	10
-../Core/Src/main.c:318:6:RTC_WKUP_IRQHandler	1
-../Core/Src/main.c:330:6:Error_Handler	1
+../Core/Src/main.c:95:6:Button_EXTI_Config	1
+../Core/Src/main.c:109:6:EXTI15_10_IRQHandler	17
+../Core/Src/main.c:189:5:main	12
+../Core/Src/main.c:289:6:SysTick_Handler	7
+../Core/Src/main.c:330:6:RTC_WKUP_IRQHandler	1
+../Core/Src/main.c:342:6:Error_Handler	1
