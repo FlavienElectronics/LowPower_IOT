@@ -98,18 +98,7 @@ int main(void)
     while (BLUE_BUTTON()){}			// Eviter le "saut" du bouton si appuyé
     LL_RTC_BAK_SetRegister(RTC, LL_RTC_BKP_DR0, expe);
 
-    // config clock tree
-    if (expe == 1){
-	  SystemClock_Config_80M();
-    } else if (expe == 2) {
-    	SystemClock_2();
-    } else if (expe == 3) {
-    	SystemClock_3();
-    }else if (expe == 4) {
-    	SystemClock_4();
-    } else {
-    	SystemClock_5_6_7_8();
-    }
+    experience(expe);
 
     mySystick( SystemCoreClock / 100);		// Config du Systick with IT
 

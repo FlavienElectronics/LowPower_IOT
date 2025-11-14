@@ -98,12 +98,6 @@ void _flavien_calibration_MSI_vs_LSE(void)
 	RCC->CR |= 0x1 << 2; // MSIPLLEN = 1
 }
 
-/*Fonction inutile probablement... */
-void _flavien_calibration_MSI_vs_LSE_off(void)
-{
-	RCC->BDCR &= ~(0x1); // LSE ocillator OFF (clear LSEON)
-	RCC->CR &= ~(0x1 << 2); // Clearing MSIPLLEN
-}
 
 void _flavien_sleep_100Hz_ON(void)
 {
@@ -142,14 +136,39 @@ void experience(uint8_t numero_experience)
   		   * Sleep (100Hz) = off -> on (when blue button)
   		   * Transceiver = Stand-by I
   		   */
-  		_flavien_MSI_4Mhz();
-  		_flavien_PLL_80Mhz();
-  		_flavien_voltage_scaling_1();
-  		_flavien_flash_latency(4);
-  		_flavien_calibration_MSI_vs_LSE_off();
-  		//Sleep OK dans la routine d'interruption
-  		// Transceiver ?
-  		Exit_Sleep_100Hz();
+//    		_flavien_MSI_4Mhz();
+//    		_flavien_PLL_80Mhz();
+//    		_flavien_voltage_scaling_1();
+//    		_flavien_flash_latency(4);
+//    		_flavien_flash_latency(1);
+  		  /* MSI configuration and activation */
+  		LL_RCC_MSI_Enable();			// normalement il est deja enabled
+  		while	(LL_RCC_MSI_IsReady() != 1)	// c'est pour le cas ou on l'aurait change
+  			{ }
+
+  		LL_FLASH_SetLatency(LL_FLASH_LATENCY_4);	// 4 pour 80MHz
+  		LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE1); //réglage tension régulateur interne
+
+  		// demarrer la PLL principale 4MHz --> 80 MHz
+  		LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_MSI, LL_RCC_PLLM_DIV_1, 40, LL_RCC_PLLR_DIV_2);
+  		LL_RCC_PLL_Enable();
+  		LL_RCC_PLL_EnableDomain_SYS();
+  		while	( LL_RCC_PLL_IsReady() != 1 )
+  			{ }
+
+  		// connecter Sysclk sur cette PLL
+  		LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
+  		LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_PLL);
+  		while	( LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_PLL )
+  			{ }
+
+  		/* Set APB1 & APB2 prescaler*/
+  		LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
+  		LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_1);
+
+  		//update global variable SystemCoreClock --> give access to CPU clock frequency.
+  		LL_SetSystemCoreClock(80000000);
+
 
   		  break;
   	  case 2:
@@ -163,14 +182,33 @@ void experience(uint8_t numero_experience)
   		   * Sleep (100Hz) = off
   		   * Transceiver = Stand-by I
   		   */
-  		_flavien_PLL_off(); // A faire avant de modifier MSI
-  		_flavien_MSI_24Mhz();
-  		_flavien_voltage_scaling_1();
-  		_flavien_flash_latency(1);
-  		// Calibration OK dans la routine d'interruption
-  		// Pas de sleep
-  		// Transceiver ?
-  		Exit_Sleep_100Hz();
+//    		_flavien_PLL_off(); // A faire avant de modifier MSI
+//    		_flavien_MSI_24Mhz();
+//    		_flavien_voltage_scaling_1();
+//    		_flavien_flash_latency(1);
+//    		// Calibration OK dans la routine d'interruption
+//    		// Pas de sleep
+//    		Exit_Sleep_100Hz();
+  		/* MSI configuration and activation */
+  		LL_RCC_MSI_Enable();			// normalement il est deja enabled
+  		while	(LL_RCC_MSI_IsReady() != 1)	// c'est pour le cas ou on l'aurait change
+  			{ }
+
+  		LL_RCC_MSI_EnableRangeSelection();
+  		LL_RCC_MSI_SetRange(LL_RCC_MSIRANGE_9);
+
+  		LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
+  		LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_MSI);
+
+  		//LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
+  		//LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_1);
+
+  		LL_FLASH_SetLatency(LL_FLASH_LATENCY_1);
+  		LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE1); //réglage tension régulateur interne
+
+  		//update global variable SystemCoreClock --> give access to CPU clock frequency.
+  		LL_SetSystemCoreClock(24000000);
+
 
 
   		  break;
@@ -185,14 +223,30 @@ void experience(uint8_t numero_experience)
   		   * Sleep (100Hz) = off -> on (when blue button)
   		   * Transceiver = Stand-by I
   		   */
-  		_flavien_PLL_off(); // A faire avant de modifier MSI
-  		_flavien_MSI_24Mhz();
-  		_flavien_voltage_scaling_2();
-  		_flavien_flash_latency(3);
-  		_flavien_calibration_MSI_vs_LSE_off();
-  		//Sleep OK dans la routine d'interruption
-  		// Transceiver ?
-  		Exit_Sleep_100Hz();
+
+  		/* MSI configuration and activation */
+//    		_flavien_PLL_off(); // A faire avant de modifier MSI
+//    		_flavien_MSI_24Mhz();
+//    		_flavien_voltage_scaling_2();
+//    		_flavien_flash_latency(3);
+//
+//    		//Sleep OK dans la routine d'interruption
+//    		Exit_Sleep_100Hz();
+  		LL_RCC_MSI_Enable();			// normalement il est deja enabled
+  		while	(LL_RCC_MSI_IsReady() != 1)	// c'est pour le cas ou on l'aurait change
+  			{ }
+
+  		LL_RCC_MSI_EnableRangeSelection();
+  		LL_RCC_MSI_SetRange(LL_RCC_MSIRANGE_9);
+
+  		LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
+  		LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_MSI);
+
+  		LL_FLASH_SetLatency(LL_FLASH_LATENCY_3);
+  		LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE2); //réglage tension régulateur interne
+
+  		//update global variable SystemCoreClock --> give access to CPU clock frequency.
+  		LL_SetSystemCoreClock(24000000);
 
   		  break;
   	  case 4:
@@ -206,13 +260,29 @@ void experience(uint8_t numero_experience)
   		   * Sleep (100Hz) = off
   		   * Transceiver = Stand-by I
   		   */
-  		_flavien_PLL_off();
-  		_flavien_MSI_24Mhz();
-  		_flavien_voltage_scaling_2();
-  		_flavien_flash_latency(3);
-  		// Calibration OK dans la routine d'interruption
-  		// Transceiver ?
-  		Exit_Sleep_100Hz();
+//    		_flavien_PLL_off();
+//    		_flavien_MSI_24Mhz();
+//    		_flavien_voltage_scaling_2();
+//    		_flavien_flash_latency(3);
+//    		// Calibration OK dans la routine d'interruption
+//    		Exit_Sleep_100Hz();
+
+  		/* MSI configuration and activation */
+  		LL_RCC_MSI_Enable();			// normalement il est deja enabled
+  		while	(LL_RCC_MSI_IsReady() != 1)	// c'est pour le cas ou on l'aurait change
+  			{ }
+
+  		LL_RCC_MSI_EnableRangeSelection();
+  		LL_RCC_MSI_SetRange(LL_RCC_MSIRANGE_9);
+
+  		LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
+  		LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_MSI);
+
+  		LL_FLASH_SetLatency(LL_FLASH_LATENCY_3);
+  		LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE2); //réglage tension régulateur interne
+
+  		//update global variable SystemCoreClock --> give access to CPU clock frequency.
+  		LL_SetSystemCoreClock(24000000);
 
   		  break;
   	  case 5:
@@ -227,14 +297,37 @@ void experience(uint8_t numero_experience)
   		   * STOP0, wakeup 7s (when blue button)
   		   * Transceiver = Power-down
   		   */
-    		_flavien_PLL_off();
-    		_flavien_MSI_24Mhz();
-    		_flavien_voltage_scaling_2();
-    		_flavien_flash_latency(3);
-    		Enable_MSI_LSE_Calibration();
-    		// Transceiver ?
-    		// Stop mode dans la routine d'interruption
-    		Enter_Sleep_100Hz();
+//  		_flavien_PLL_off();
+//  		_flavien_MSI_24Mhz();
+//  		_flavien_voltage_scaling_2();
+//  		_flavien_flash_latency(3);
+  		Enable_MSI_LSE_Calibration();
+  		// Stop mode dans la routine d'interruption
+  		Enter_Sleep_100Hz();
+  		LL_RCC_MSI_Enable();			// normalement il est deja enabled
+  		while	(LL_RCC_MSI_IsReady() != 1)	// c'est pour le cas ou on l'aurait change
+  			{ }
+
+  		LL_RCC_MSI_EnableRangeSelection();
+  		LL_RCC_MSI_SetRange(LL_RCC_MSIRANGE_9);
+
+  		LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
+  		LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_MSI);
+
+  		LL_FLASH_SetLatency(LL_FLASH_LATENCY_3);
+  		LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE2); //réglage tension régulateur interne
+
+
+  		//Calibration MSI/LSE
+  		while (LL_RCC_LSE_IsReady() != 1){
+  			  LL_RCC_LSE_Enable();
+  			  }
+  		LL_RCC_MSI_EnablePLLMode();
+
+  		//update global variable SystemCoreClock --> give access to CPU clock frequency.
+  		LL_SetSystemCoreClock(24000000);
+
+  		nRF24_SetPowerMode(1);
 
 
   		  break;
@@ -250,14 +343,35 @@ void experience(uint8_t numero_experience)
   		   * STOP1, wakeup 7s (when blue button)
   		   * Transceiver = Power-down
   		   */
-  		_flavien_PLL_off();
-  		_flavien_MSI_24Mhz();
-  		_flavien_voltage_scaling_2();
-  		_flavien_flash_latency(3);
-  		Enable_MSI_LSE_Calibration();
-  		// Transceiver ?
-  		// Stop mode dans la routine d'interruption
-  		Enter_Sleep_100Hz();
+//    		_flavien_PLL_off();
+//    		_flavien_MSI_24Mhz();
+//    		_flavien_voltage_scaling_2();
+//    		_flavien_flash_latency(3);
+//    		Enable_MSI_LSE_Calibration();
+//    		// Stop mode dans la routine d'interruption
+//    		Enter_Sleep_100Hz();
+  		LL_RCC_MSI_Enable();			// normalement il est deja enabled
+  		while	(LL_RCC_MSI_IsReady() != 1)	// c'est pour le cas ou on l'aurait change
+  			{ }
+
+  		LL_RCC_MSI_EnableRangeSelection();
+  		LL_RCC_MSI_SetRange(LL_RCC_MSIRANGE_9);
+
+  		LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
+  		LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_MSI);
+
+  		LL_FLASH_SetLatency(LL_FLASH_LATENCY_3);
+  		LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE2); //réglage tension régulateur interne
+
+
+  		//Calibration MSI/LSE
+  		while (LL_RCC_LSE_IsReady() != 1){
+  			  LL_RCC_LSE_Enable();
+  			  }
+  		LL_RCC_MSI_EnablePLLMode();
+
+  		//update global variable SystemCoreClock --> give access to CPU clock frequency.
+  		LL_SetSystemCoreClock(24000000);
 
   		  break;
   	  case 7:
@@ -272,14 +386,35 @@ void experience(uint8_t numero_experience)
   		   * STOP2, wakeup 7s (when blue button)
   		   * Transceiver = Power-down
   		   */
-    		_flavien_PLL_off();
-    		_flavien_MSI_24Mhz();
-    		_flavien_voltage_scaling_2();
-    		_flavien_flash_latency(3);
-    		Enable_MSI_LSE_Calibration();
-    		// Transceiver ?
-    		// Stop mode dans la routine d'interruption
-    		Enter_Sleep_100Hz();
+//  		_flavien_PLL_off();
+//  		_flavien_MSI_24Mhz();
+//  		_flavien_voltage_scaling_2();
+//  		_flavien_flash_latency(3);
+  		Enable_MSI_LSE_Calibration();
+  		// Stop mode dans la routine d'interruption
+  		Enter_Sleep_100Hz();
+  		LL_RCC_MSI_Enable();			// normalement il est deja enabled
+  		while	(LL_RCC_MSI_IsReady() != 1)	// c'est pour le cas ou on l'aurait change
+  			{ }
+
+  		LL_RCC_MSI_EnableRangeSelection();
+  		LL_RCC_MSI_SetRange(LL_RCC_MSIRANGE_9);
+
+  		LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
+  		LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_MSI);
+
+  		LL_FLASH_SetLatency(LL_FLASH_LATENCY_3);
+  		LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE2); //réglage tension régulateur interne
+
+
+  		//Calibration MSI/LSE
+  		while (LL_RCC_LSE_IsReady() != 1){
+  			  LL_RCC_LSE_Enable();
+  			  }
+  		LL_RCC_MSI_EnablePLLMode();
+
+  		//update global variable SystemCoreClock --> give access to CPU clock frequency.
+  		LL_SetSystemCoreClock(24000000);
   		  break;
   	  case 8:
   		  // Code pour expe == 8
@@ -293,14 +428,35 @@ void experience(uint8_t numero_experience)
   		   * SHUTDOWN, wakeup 7s (when blue button)
   		   * Transceiver = Power-down
   		   */
-  		_flavien_PLL_off();
-  		_flavien_MSI_24Mhz();
-  		_flavien_voltage_scaling_2();
-  		_flavien_flash_latency(3);
-  		Enable_MSI_LSE_Calibration();
-  		// Transceiver ?
-  		// Stop mode dans la routine d'interruption
-  		Enter_Sleep_100Hz();
+//    		_flavien_PLL_off();
+//    		_flavien_MSI_24Mhz();
+//    		_flavien_voltage_scaling_2();
+//    		_flavien_flash_latency(3);
+    		Enable_MSI_LSE_Calibration();
+    		// Stop mode dans la routine d'interruption
+    		Enter_Sleep_100Hz();
+  		LL_RCC_MSI_Enable();			// normalement il est deja enabled
+  		while	(LL_RCC_MSI_IsReady() != 1)	// c'est pour le cas ou on l'aurait change
+  			{ }
+
+  		LL_RCC_MSI_EnableRangeSelection();
+  		LL_RCC_MSI_SetRange(LL_RCC_MSIRANGE_9);
+
+  		LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
+  		LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_MSI);
+
+  		LL_FLASH_SetLatency(LL_FLASH_LATENCY_3);
+  		LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE2); //réglage tension régulateur interne
+
+
+  		//Calibration MSI/LSE
+  		while (LL_RCC_LSE_IsReady() != 1){
+  			  LL_RCC_LSE_Enable();
+  			  }
+  		LL_RCC_MSI_EnablePLLMode();
+
+  		//update global variable SystemCoreClock --> give access to CPU clock frequency.
+  		LL_SetSystemCoreClock(24000000);
   		  break;
   	  default:
   		  // Code si expe n’est pas entre 1 et 8
