@@ -22,110 +22,109 @@
  *
  */
 
-
-
 #include "main.h"
 #include "gpio.h"
 #include "clock.h"
 #include "spi.h"
 #include "usart.h"
-
+#include "RadioFunctions.h"
+#include "nrf24.h"
+#include "rtc.h"
 #include "stm32l4xx_ll_rtc.h"
 
-volatile unsigned int ticks = 0; //pour la gestion des intervalles de temps. 1 tick = 10 ms.
-volatile int blue_mode = 0; //pour savoir si on est dans le mode "Blue mode"
-volatile int old_blue = 0;
-uint32_t expe = 0; //pour la sauvegarde du numéro de l'expérience
+volatile unsigned int ticks = 0;	//1tick = 10 ms.
+volatile int blue_mode = 0;			//bouton bleu
+volatile int expe = 1;				//nb expérience
 
+uint8_t cptr = 0;
+uint8_t cptr_transmit = 1;
+uint8_t period_transmit = 200;	//période de retransmission du message en multiples de périodes de 10 ms (période de débordement du Systick)
+
+#define taille_message 32			// Init message
+const char entete_message[15] = "BOUT-CARV-LESP-";
+uint8_t Message[taille_message];
+uint8_t channel_nb = 60;		//n° du canal radio utilisé (//channel 60 --> 2460 MHz)
+uint8_t adr_data_pipe_used = 1; //numéro du data pipe utilisé pour la transmission (de 0 à 5)
 
 int main(void)
 {
-
-  RCC->CR |= RCC_CR_MSION;		// Activation du MSI
-
   /*clock domains activation*/
   LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
   LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
-
-  LL_PWR_EnableBkUpAccess();
-
   NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+  LL_PWR_EnableBkUpAccess(); // droit Write
 
-  // config GPIO
-  GPIO_init();
-  //config clock
-  SystemClock_Config_80M();
-  //config bus SPI1 (pour la communication avec le transceiver nRF24L01)
-  SPI1_Init();
-  //config USART2
-  USART2_Init();
-
-  // config systick avec interrupt
-  mySystick( SystemCoreClock / 100 );	// 100 Hz --> 10 ms
-
-  Button_EXTI_Config();
-
-  expe = LL_RTC_BAK_GetRegister(RTC, LL_RTC_BKP_DR0);
-  if (expe == 0){
-	  expe = 1;
-	  LL_RTC_BAK_SetRegister(RTC, LL_RTC_BKP_DR0, expe);
+  if (LL_RCC_LSE_IsReady() == 1) { // hot start
+	  LL_RCC_SetRTCClockSource(LL_RCC_RTC_CLKSOURCE_LSE);
+	  LL_RCC_EnableRTC();
+  }
+  else // cold start
+  {
+	  LL_RCC_ForceBackupDomainReset();
+	  LL_RCC_ReleaseBackupDomainReset();
+	  LL_RCC_LSE_Enable();
+	  while (!LL_RCC_LSE_IsReady()) {
+	  }
+	  LL_RCC_SetRTCClockSource(LL_RCC_RTC_CLKSOURCE_LSE);
+	  LL_RCC_EnableRTC();
+	  LL_RTC_DisableWriteProtection(RTC);
+	  LL_RTC_EnableInitMode(RTC);
+	  LL_RTC_SetAsynchPrescaler(RTC,0x7F);		//div 128
+	  LL_RTC_SetSynchPrescaler(RTC,0xFF);		//div 256
+	  LL_RTC_DisableInitMode(RTC);
+	  LL_RTC_EnableWriteProtection(RTC);
   }
 
+  Button_EXTI_Config();	// Création de l'interruption du bouton pour le Blue Mode
+  GPIO_init();			// Configuration GPIO
+  SPI1_Init();			// Configuration du BUS SPI1
+
+  expe = LL_RTC_BAK_GetRegister(RTC, LL_RTC_BKP_DR0);		// Récupération du numéro d'expérience dans le registre RTC
+
+  if (expe < 1 || expe > 8){		// Au cas où l'expérience n'est pas définie correctement
+	  expe = 1;
+  }
 
   if (BLUE_BUTTON()){
-	  expe += 1;
-	  if (expe > 8){
-		  expe = 1;
-	  }
-	  LL_RTC_BAK_SetRegister(RTC, LL_RTC_BKP_DR0, expe);
+	expe += 1;
+	if (expe == 9){
+		expe = 1;
+	}
+	blue_mode = 0;
   }
 
-  switch (expe) {	//TEST
-	  case 1:
-		  // Code pour expe == 1
-		  SystemClock_Config_MSI_4M();		// MSI à 4 Mhz
-		  SystemClock_Enable_PLL_80M();		// PLL à 80 Mhz
-		  Configure_VoltageScaling(1);
-		  Configure_FlashLatency(4);
-		  Disable_MSI_LSE_Calibration();
-		  break;
-	  case 2:
-		  SystemClock_Config_MSI_24M();		// MSI à 24 MHz
-		  SystemClock_Disable_PLL();		// PLL désactivée
-		  Configure_VoltageScaling(1);
-		  Configure_FlashLatency(1);
-		  Disable_MSI_LSE_Calibration();
-		  break;
-	  case 3:
-		  // Code pour expe == 3
-		  SystemClock_Config_MSI_24M();		// MSI à 24 MHz
-		  SystemClock_Disable_PLL();		// PLL désactivée
-		  Configure_VoltageScaling(2);
-		  Configure_FlashLatency(3);
-		  Disable_MSI_LSE_Calibration();
-		  break;
-	  case 4:
-		  // Code pour expe == 4
-		  break;
-	  case 5:
-		  // Code pour expe == 5
-		  break;
-	  case 6:
-		  // Code pour expe == 6
-		  break;
-	  case 7:
-		  // Code pour expe == 7
-		  break;
-	  case 8:
-		  // Code pour expe == 8
-		  break;
-	  default:
-		  // Code si expe n’est pas entre 1 et 8
-		  break;
+    while (BLUE_BUTTON()){}			// Eviter le "saut" du bouton si appuyé
+    LL_RTC_BAK_SetRegister(RTC, LL_RTC_BKP_DR0, expe);
 
+    // config clock tree
+    if (expe == 1){
+	  SystemClock_Config_80M();
+    } else if (expe == 2) {
+    	SystemClock_2();
+    } else if (expe == 3) {
+    	SystemClock_3();
+    }else if (expe == 4) {
+    	SystemClock_4();
+    } else {
+    	SystemClock_5_6_7_8();
+    }
 
+    mySystick( SystemCoreClock / 100);		// Config du Systick with IT
 
-  }
+    Init_Transceiver();		//config transceiver / mode PTX
+    Config_RF_channel(channel_nb,nRF24_DR_250kbps,nRF24_TXPWR_6dBm);
+    Config_CRC(CRC_Field_On, CRC_Field_1byte);
+    //Adresse sur 5 bits. Transmission sur le data pipe adr_data_pipe_used.
+    Config_PTX_adress(5,Default_pipe_address,adr_data_pipe_used,nRF24_AA_ON);
+    Config_ESB_Protocol(nRF24_ARD_1000us,10);
+    //on sort du mode power down
+    if (expe < 5){
+    	nRF24_SetPowerMode(nRF24_PWR_UP);
+    	Delay_ms(2); //Attente 2 ms (1.5 ms pour la sortie du mode power down).
+    }
+
+    nRF24_SetOperationalMode(nRF24_MODE_TX);		//Entrée en mode TX
+    StopListen();
 
   while (1)
   {
@@ -133,45 +132,133 @@ int main(void)
   }
 }
 
-// partie commune a toutes les utilisations du wakeup timer
-static void RTC_wakeup_init( int delay )
+void Button_EXTI_Config(void)
 {
-	LL_RTC_DisableWriteProtection( RTC );
-	LL_RTC_WAKEUP_Disable( RTC );
-	while	( !LL_RTC_IsActiveFlag_WUTW( RTC ) )
-		{ }
-	// connecter le timer a l'horloge 1Hz de la RTC
-	LL_RTC_WAKEUP_SetClock( RTC, LL_RTC_WAKEUPCLOCK_CKSPRE );
-	// fixer la duree de temporisation
-	LL_RTC_WAKEUP_SetAutoReload( RTC, delay );	// 16 bits
-	LL_RTC_ClearFlag_WUT(RTC);
-	LL_RTC_EnableIT_WUT(RTC);
-	LL_RTC_WAKEUP_Enable(RTC);
-	LL_RTC_EnableWriteProtection(RTC);
+    LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTC, LL_SYSCFG_EXTI_LINE13);
+    LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_13);
+    LL_EXTI_EnableFallingTrig_0_31(LL_EXTI_LINE_13);
+    LL_EXTI_DisableRisingTrig_0_31(LL_EXTI_LINE_13);
+    NVIC_SetPriority(EXTI15_10_IRQn, 2);
+    NVIC_EnableIRQ(EXTI15_10_IRQn);
 }
 
-// Dans le cas des modes STANDBY et SHUTDOWN, le MPU sera reveille par reset
-// causé par 1 wakeup line (interne ou externe) (le NVIC n'est plus alimenté)
-void RTC_wakeup_init_from_standby_or_shutdown( int delay )
+void EXTI15_10_IRQHandler(void)
 {
-	RTC_wakeup_init( delay );
-	// enable the Internal Wake-up line
-	LL_PWR_EnableInternWU();	// ceci ne concerne que Standby et Shutdown, pas STOPx
+	if (blue_mode == 0){
+		blue_mode = 1;
+
+	if (blue_mode == 1){
+		switch (expe) {
+		  case 1:
+			  LL_LPM_EnableSleep();
+			  blue_mode = 0;
+			  __WFI();
+			  break;
+
+		  case 2:
+			  while (LL_RCC_LSE_IsReady() != 1) {
+				  LL_RCC_LSE_Enable();
+			  }
+			  LL_RCC_MSI_EnablePLLMode();
+			  blue_mode = 0;
+			  break;
+
+		  case 3:
+			  LL_LPM_EnableSleep();
+			  blue_mode = 0;
+			  __WFI();
+			  break;
+
+		  case 4:
+			  while (LL_RCC_LSE_IsReady() != 1) {
+				  LL_RCC_LSE_Enable();
+			  }
+			  LL_RCC_MSI_EnablePLLMode();
+			  blue_mode = 0;
+			  break;
+
+		  case 5:
+			  RTC_wakeup_init_from_stop(7);
+			  LL_PWR_SetPowerMode(LL_PWR_MODE_STOP0);
+			  LL_LPM_EnableDeepSleep();
+			  __WFI();
+			  blue_mode = 0;
+			  break;
+
+		  case 6:
+			  RTC_wakeup_init_from_stop(7);
+			  LL_PWR_SetPowerMode(LL_PWR_MODE_STOP1);
+			  LL_LPM_EnableDeepSleep();
+			  __WFI();
+			  SystemClock_5_6_7_8();
+			  blue_mode = 0;
+			  break;
+
+		  case 7:
+			  RTC_wakeup_init_from_stop(7);
+			  LL_PWR_SetPowerMode(LL_PWR_MODE_STOP2);
+			  LL_LPM_EnableDeepSleep();
+			  __WFI();
+			  blue_mode = 0;
+			  break;
+
+		  case 8:
+			  RTC_wakeup_init_from_standby_or_shutdown(7);
+			  LL_PWR_SetPowerMode(LL_PWR_MODE_SHUTDOWN);
+			  LL_LPM_EnableDeepSleep();
+			  __WFI();
+			  blue_mode = 0;
+			  break;
+
+		  default:
+			  if (expe != 1 && expe != 2 && expe != 3 && expe != 4) {
+				  LL_LPM_EnableSleep();
+				  __WFI();
+			  }
+			  break;
+			}
+		}
+	}
 }
 
-// Dans le cas des modes STOPx, le MPU sera reveille par interruption
-// le module EXTI et une partie du NVIC sont encore alimentes
-// le contenu de la RAM et des registres étant préservé, le MPU
-// reprend l'execution après l'instruction WFI
-void RTC_wakeup_init_from_stop( int delay )
+// systick interrupt handler --> allumage LED toutes les 2 s pendant 50 ms.
+void SysTick_Handler()
 {
-	RTC_wakeup_init( delay );
-	// valider l'interrupt par la ligne 20 du module EXTI, qui est réservée au wakeup timer
-	LL_EXTI_EnableIT_0_31( LL_EXTI_LINE_20 );
-	LL_EXTI_EnableRisingTrig_0_31( LL_EXTI_LINE_20 );
-	// valider l'interrupt chez NVIC
-	NVIC_SetPriority( RTC_WKUP_IRQn, 1 );
-	NVIC_EnableIRQ( RTC_WKUP_IRQn );
+	unsigned int subticks;
+	ticks += 1;
+
+	//gestion de l'allumage de la LED
+	subticks = ticks % 200;
+	if	( subticks == 0 ) LED_GREEN(1);
+    else if	( subticks == (expe * 5) ){
+	LED_GREEN(0);}
+
+	//Partie pour le transceiver
+		if (cptr_transmit == period_transmit) {
+
+			//sortie du mode power down
+			if (expe > 5){
+			nRF24_SetPowerMode(nRF24_PWR_UP);}
+			//Delay_ms(2); //Attente 2 ms (1.5 ms pour la sortie du mode power down.
+			//En fait, on attend 200 ms car la base de temps du systick est 100 ms.
+			//LE test montre qu'on n'est pas obligé de mettre un délai. Le temps de compléter le tableau
+			//Message et le temps de transmettre sur l'UART prend au moins 5 ms.
+
+			//préparation du message à transmettre
+			for (uint8_t i = 0; i < 15; i++) {
+				Message[i] = entete_message[i];
+			}
+			Message[15] = '-';
+			Message[16] = cptr;
+
+			Transmit_Message(Message,taille_message);
+			cptr++;
+			cptr_transmit = 1;
+			if (expe > 5) nRF24_SetPowerMode(nRF24_PWR_DOWN); // mode low power
+		}
+		else {
+			cptr_transmit ++;
+		}
 }
 
 // wakeup timer interrupt Handler (inutile mais doit etre defini)
@@ -180,127 +267,6 @@ void RTC_WKUP_IRQHandler()
 	LL_EXTI_ClearFlag_0_31( LL_EXTI_LINE_20 );
 }
 
-
-void Button_EXTI_Config(void)
-{
-    // 1. Activer l’horloge GPIOC
-    //LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOC);
-
-    // 2. Configurer PC13 en entrée pull-up (souvent bouton user sur Nucleo / STM32 boards)
-    //LL_GPIO_SetPinMode(GPIOC, User_Button_Pin, LL_GPIO_MODE_INPUT);
-    //LL_GPIO_SetPinPull(GPIOC, User_Button_Pin, LL_GPIO_PULL_UP);
-
-    // 3. Configurer EXTI ligne 13 pour PC13
-    //LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
-
-    // Mapper EXTI13 à PC13
-    LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTC, LL_SYSCFG_EXTI_LINE13);
-
-    // Configurer EXTI13 interruption front descendant
-    LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_13);
-    LL_EXTI_EnableFallingTrig_0_31(LL_EXTI_LINE_13);
-    LL_EXTI_DisableRisingTrig_0_31(LL_EXTI_LINE_13);
-
-    // 4. Configurer NVIC (EXTI15_10 gère les lignes 10 à 15)
-    NVIC_SetPriority(EXTI15_10_IRQn, 2);
-    NVIC_EnableIRQ(EXTI15_10_IRQn);
-}
-
-// 5. ISR pour EXTI lignes 10 à 15
-void EXTI15_10_IRQHandler(void)
-{
-    if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_13))
-    {
-        LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_13);
-
-        // Ici traitement interruption bouton PC13
-        if (blue_mode == 0){
-        	blue_mode = 1;
-        }else{
-        	blue_mode = 0;
-        }
-
-        switch (expe) {		// changement de config specifique au blu mode
-        	case 1:
-        		if (blue_mode == 1){
-        			Enter_Sleep_100Hz();
-        		}else{
-        			Exit_Sleep_100Hz();
-        		}
-        		break;
-        	case 2:
-        		Exit_Sleep_100Hz();
-        		Enable_MSI_LSE_Calibration();
-        		break;
-        	case 3:
-        		if (blue_mode == 1){
-					Enter_Sleep_100Hz();
-				}else{
-					Exit_Sleep_100Hz();
-				}
-        		break;
-        	case 4:
-        		Exit_Sleep_100Hz();
-        		Enable_MSI_LSE_Calibration();
-        		break;
-        	case 5:
-        		RTC_wakeup_init_from_stop(7);
-        		break;
-        	case 6:
-        		RTC_wakeup_init_from_stop(7);
-        		break;
-        	case 7:
-        		RTC_wakeup_init_from_stop(7);
-        		break;
-        	case 8:
-        		RTC_wakeup_init_from_standby_or_shutdown(7);
-        		break;
-		    default:
-			    // Code si expe n’est pas entre 1 et 8
-			    break;
-        }
-
-    }
-}
-
-
-// systick interrupt handler --> allumage LED toutes les 2 s pendant 50 ms.
-//Scrutation de l'état du bouton bleu  (pas d'action à ce stade).
-void SysTick_Handler()
-{
-	unsigned int subticks;
-
-	//scrutation bouton bleu
-	ticks += 1;
-
-	if (ticks % 2){
-		// etat bas
-		PWM_STATE(0);
-	}else{
-		// etat haut
-		PWM_STATE(1);
-	}
-
-	if	( BLUE_BUTTON() )
-		{
-		if	( old_blue == 0 )
-			blue_mode = 1;
-		old_blue = 1;
-		}
-	else 	old_blue = 0;
-
-	//gestion de l'allumage de la LED
-	subticks = ticks % 200;
-	if	( subticks == 0 )
-		LED_GREEN(1);
-	else if	( subticks == 15*expe )
-		LED_GREEN(0);
-}
-
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -308,6 +274,8 @@ void Error_Handler(void)
 
   /* USER CODE END Error_Handler_Debug */
 }
+
+// ========= IFDEF =========
 
 #ifdef  USE_FULL_ASSERT
 /**

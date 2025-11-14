@@ -14,7 +14,6 @@ Core/Src/clock.o: ../Core/Src/clock.c \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_cortex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_system.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_utils.h \
- ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_gpio.h \
  ../Core/Inc/clock.h
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_bus.h:
 ../Drivers/CMSIS/Device/ST/STM32L4xx/Include/stm32l4xx.h:
@@ -31,5 +30,4 @@ Core/Src/clock.o: ../Core/Src/clock.c \
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_cortex.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_system.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_utils.h:
-../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_gpio.h:
 ../Core/Inc/clock.h:

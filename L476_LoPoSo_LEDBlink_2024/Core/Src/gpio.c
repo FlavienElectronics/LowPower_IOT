@@ -84,28 +84,12 @@ void GPIO_init(void)
 	  NVIC_EnableIRQ(EXTI0_IRQn);
 }
 
-void LED_GREEN_OUTPUT(void){
-	  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
-	  GPIO_InitStruct.Pin = User_LED_Pin;
-	  GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
-	  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
-	  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-	  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-	  LL_GPIO_Init(User_LED_GPIO_Port, &GPIO_InitStruct);
-}
 
 void LED_GREEN( int val )
 {
 	if	( val )
 		LL_GPIO_SetOutputPin(User_LED_GPIO_Port, User_LED_Pin);
 	else	LL_GPIO_ResetOutputPin(User_LED_GPIO_Port, User_LED_Pin);
-}
-
-void PWM_STATE( int val )
-{
-	if	( val )
-		LL_GPIO_SetOutputPin(Clock_Monitor_GPIO_Port, Clock_Monitor_Pin);
-	else	LL_GPIO_ResetOutputPin(Clock_Monitor_GPIO_Port, Clock_Monitor_Pin);
 }
 
 int BLUE_BUTTON()
