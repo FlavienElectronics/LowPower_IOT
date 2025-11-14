@@ -121,6 +121,40 @@ void _flavien_set_stop_mode(uint8_t mode)
 	PWR->CR1 |= mode; // Setting the selected mode into LPMS field
 }
 
+void Disable_All_Clocks_Except_RTC(void)
+{
+    /* ----- 1. Garder seulement LSE ----- */
+    LL_RCC_LSE_Enable();
+    while (!LL_RCC_LSE_IsReady());
+
+    /* ----- 2. Sélectionner LSE comme horloge RTC ----- */
+    LL_RCC_SetRTCClockSource(LL_RCC_RTC_CLKSOURCE_LSE);
+
+    /* ----- 3. Activer l’horloge RTC ----- */
+    LL_RCC_EnableRTC();
+
+    /* ----- 4. Désactiver toutes les autres horloges ----- */
+
+    /* Désactiver MSI, HSI, HSE, PLL */
+    LL_RCC_MSI_Disable();
+    LL_RCC_HSI_Disable();
+    LL_RCC_HSE_Disable();
+    LL_RCC_PLL_Disable();
+
+    /* Désactiver les buses périphériques (APB / AHB) */
+    LL_AHB1_GRP1_DisableClock(0xFFFFFFFF);
+    LL_AHB2_GRP1_DisableClock(0xFFFFFFFF);
+    LL_AHB3_GRP1_DisableClock(0xFFFFFFFF);
+
+    LL_APB1_GRP1_DisableClock(0xFFFFFFFF);
+    LL_APB1_GRP2_DisableClock(0xFFFFFFFF);
+    LL_APB2_GRP1_DisableClock(0xFFFFFFFF);
+
+    /* ----- 5. Laisser seulement l'horloge RTC active ----- */
+    /* Aucune action supplémentaire : RTC fonctionne en domaine backup */
+}
+
+
 
 void experience(uint8_t numero_experience)
 {
@@ -534,6 +568,7 @@ void blue_button_pressed(uint8_t numero_experience)
 //				  LL_PWR_SetPowerMode(LL_PWR_MODE_SHUTDOWN);
 				  _flavien_set_stop_mode(4);
 				  NVIC_DisableIRQ(SysTick_IRQn);
+				  Disable_All_Clocks_Except_RTC();
 				  LL_LPM_EnableDeepSleep();
 				  __WFI();
 				  blue_mode = 0;

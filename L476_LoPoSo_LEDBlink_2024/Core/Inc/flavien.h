@@ -1,6 +1,7 @@
 #include "main.h"
 #include "rtc.h"
 #include "clock.h"
+#include "nrf24.h"
 
 void _flavien_MSI_4Mhz(void);
 
@@ -13,6 +14,8 @@ void _flavien_PLL_off(void);
 void _flavien_voltage_scaling_1(void);
 
 void _flavien_voltage_scaling_2(void);
+
+void Disable_All_Clocks_Except_RTC(void);
 
 void _flavien_flash_latency(uint8_t latency);
 
