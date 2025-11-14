@@ -1,4 +1,5 @@
 ../Drivers/CMSIS/Include/core_cm4.h:1679:22:__NVIC_EnableIRQ	2
+../Drivers/CMSIS/Include/core_cm4.h:1717:22:__NVIC_DisableIRQ	2
 ../Drivers/CMSIS/Include/core_cm4.h:1809:22:__NVIC_SetPriority	2
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_exti.h:306:22:LL_EXTI_EnableIT_0_31	1
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_exti.h:739:22:LL_EXTI_EnableRisingTrig_0_31	1
@@ -12,6 +13,17 @@
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rtc.h:5106:22:LL_RTC_ClearFlag_WUT	1
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rtc.h:5196:26:LL_RTC_IsActiveFlag_WUTW	1
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rtc.h:5264:22:LL_RTC_EnableIT_WUT	1
-../Core/Src/rtc.c:6:13:RTC_wakeup_init	2
-../Core/Src/rtc.c:23:6:RTC_wakeup_init_from_standby_or_shutdown	1
-../Core/Src/rtc.c:34:6:RTC_wakeup_init_from_stop	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:2270:22:LL_RCC_LSE_Enable	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:2362:26:LL_RCC_LSE_IsReady	2
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:2523:22:LL_RCC_MSI_EnablePLLMode	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:2535:22:LL_RCC_MSI_DisablePLLMode	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_bus.h:1089:22:LL_APB1_GRP1_EnableClock	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_bus.h:1265:22:LL_APB1_GRP1_DisableClock	1
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_cortex.h:310:22:LL_LPM_EnableSleep	1
+../Core/Src/rtc.c:8:13:RTC_wakeup_init	2
+../Core/Src/rtc.c:25:6:RTC_wakeup_init_from_standby_or_shutdown	1
+../Core/Src/rtc.c:36:6:RTC_wakeup_init_from_stop	1
+../Core/Src/rtc.c:47:6:Enable_MSI_LSE_Calibration	2
+../Core/Src/rtc.c:57:6:Disable_MSI_LSE_Calibration	1
+../Core/Src/rtc.c:62:6:Enter_Sleep_100Hz	1
+../Core/Src/rtc.c:99:6:Exit_Sleep_100Hz	1

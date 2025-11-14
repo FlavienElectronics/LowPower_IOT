@@ -31,6 +31,7 @@
 #include "nrf24.h"
 #include "rtc.h"
 #include "stm32l4xx_ll_rtc.h"
+#include "flavien.h"
 
 volatile unsigned int ticks = 0;	//1tick = 10 ms.
 volatile int blue_mode = 0;			//bouton bleu
@@ -49,7 +50,8 @@ uint8_t adr_data_pipe_used = 1; //numéro du data pipe utilisé pour la transmis
 int main(void)
 {
   /*clock domains activation*/
-  LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
+
+	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
   LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
   NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
   LL_PWR_EnableBkUpAccess(); // droit Write
@@ -144,81 +146,8 @@ void Button_EXTI_Config(void)
 
 void EXTI15_10_IRQHandler(void)
 {
-	if (blue_mode == 0){
-		blue_mode = 1;
-
-	if (blue_mode == 1){
-		switch (expe) {
-		  case 1:
-			  LL_LPM_EnableSleep();
-			  blue_mode = 0;
-			  __WFI();
-			  break;
-
-		  case 2:
-			  while (LL_RCC_LSE_IsReady() != 1) {
-				  LL_RCC_LSE_Enable();
-			  }
-			  LL_RCC_MSI_EnablePLLMode();
-			  blue_mode = 0;
-			  break;
-
-		  case 3:
-			  LL_LPM_EnableSleep();
-			  blue_mode = 0;
-			  __WFI();
-			  break;
-
-		  case 4:
-			  while (LL_RCC_LSE_IsReady() != 1) {
-				  LL_RCC_LSE_Enable();
-			  }
-			  LL_RCC_MSI_EnablePLLMode();
-			  blue_mode = 0;
-			  break;
-
-		  case 5:
-			  RTC_wakeup_init_from_stop(7);
-			  LL_PWR_SetPowerMode(LL_PWR_MODE_STOP0);
-			  LL_LPM_EnableDeepSleep();
-			  __WFI();
-			  blue_mode = 0;
-			  break;
-
-		  case 6:
-			  RTC_wakeup_init_from_stop(7);
-			  LL_PWR_SetPowerMode(LL_PWR_MODE_STOP1);
-			  LL_LPM_EnableDeepSleep();
-			  __WFI();
-			  SystemClock_5_6_7_8();
-			  blue_mode = 0;
-			  break;
-
-		  case 7:
-			  RTC_wakeup_init_from_stop(7);
-			  LL_PWR_SetPowerMode(LL_PWR_MODE_STOP2);
-			  LL_LPM_EnableDeepSleep();
-			  __WFI();
-			  blue_mode = 0;
-			  break;
-
-		  case 8:
-			  RTC_wakeup_init_from_standby_or_shutdown(7);
-			  LL_PWR_SetPowerMode(LL_PWR_MODE_SHUTDOWN);
-			  LL_LPM_EnableDeepSleep();
-			  __WFI();
-			  blue_mode = 0;
-			  break;
-
-		  default:
-			  if (expe != 1 && expe != 2 && expe != 3 && expe != 4) {
-				  LL_LPM_EnableSleep();
-				  __WFI();
-			  }
-			  break;
-			}
-		}
-	}
+	blue_button_pressed(expe);
+	LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_13);
 }
 
 // systick interrupt handler --> allumage LED toutes les 2 s pendant 50 ms.
@@ -265,6 +194,7 @@ void SysTick_Handler()
 void RTC_WKUP_IRQHandler()
 {
 	LL_EXTI_ClearFlag_0_31( LL_EXTI_LINE_20 );
+	blue_mode = 0;
 }
 
 void Error_Handler(void)

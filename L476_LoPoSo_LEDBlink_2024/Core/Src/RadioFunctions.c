@@ -120,8 +120,6 @@ void Init_Transceiver() {
 
 //Configuration du canal RF : fréq du canal RF, puissance RF et data rate
 void Config_RF_channel(uint8_t channel_nb, uint8_t DataRate, uint8_t TX_Power) {
-	uint8_t reg;
-
 	// Set RF channel
 	nRF24_SetRFChannel(channel_nb);
 	// Set data rate
@@ -193,6 +191,7 @@ void Config_PRX_adress(uint8_t Address_width, uint8_t autoAck_on, uint8_t Addr_D
 //num_data_pipe est compris entre 0 et 5. Addr_Default = Default_pipe_address ou Custom_pipe_address.
 void Config_PTX_adress(uint8_t Address_width, uint8_t Addr_Default, uint8_t num_data_pipe, uint8_t autoAck_on) {
 	uint8_t reg;
+
 	uint8_t verif_TX_Adr[5];
 	uint8_t verif_RX0_Adr[5];
 	uint8_t pipeAddrVar[5];
@@ -256,8 +255,6 @@ void Config_PTX_adress(uint8_t Address_width, uint8_t Addr_Default, uint8_t num_
 //On spécifie, pour le PTX uniquement, le nb de retransmission (ARC --> count_retries, de 0 à 15) et le
 //délai entre retransmission (ARD --> delay_retries, de 0 à 15)
 void Config_ESB_Protocol(uint8_t delay_retries, uint8_t count_retries) {
-	uint8_t reg;
-
 	//autorisation de l'auto acknowledgement pour tous les data pipes
 	nRF24_EnableAA(0);
 	nRF24_EnableAA(1);

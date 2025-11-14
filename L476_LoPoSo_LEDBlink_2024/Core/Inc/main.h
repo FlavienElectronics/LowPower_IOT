@@ -72,6 +72,8 @@ void SysTick_Handler(void);
 
 /* USER CODE BEGIN EFP */
 
+void Button_EXTI_Config(void);
+
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
