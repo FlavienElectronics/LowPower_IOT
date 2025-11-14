@@ -29,4 +29,4 @@
 ../Core/Src/main.c:147:6:EXTI15_10_IRQHandler	1
 ../Core/Src/main.c:154:6:SysTick_Handler	7
 ../Core/Src/main.c:194:6:RTC_WKUP_IRQHandler	1
-../Core/Src/main.c:200:6:Error_Handler	1
+../Core/Src/main.c:201:6:Error_Handler	1

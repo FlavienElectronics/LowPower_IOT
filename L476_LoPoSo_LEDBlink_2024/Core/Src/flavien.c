@@ -346,15 +346,18 @@ void blue_button_pressed(uint8_t numero_experience)
 
 			  case 5:
 				  RTC_wakeup_init_from_stop(7);
-				  LL_PWR_SetPowerMode(LL_PWR_MODE_STOP0);
+//				  LL_PWR_SetPowerMode(LL_PWR_MODE_STOP0);
+				  _flavien_set_stop_mode(0);
 				  LL_LPM_EnableDeepSleep();
+
 				  __WFI();
 				  blue_mode = 0;
 				  break;
 
 			  case 6:
 				  RTC_wakeup_init_from_stop(7);
-				  LL_PWR_SetPowerMode(LL_PWR_MODE_STOP1);
+//				  LL_PWR_SetPowerMode(LL_PWR_MODE_STOP1);
+				  _flavien_set_stop_mode(1);
 				  LL_LPM_EnableDeepSleep();
 				  __WFI();
 				  SystemClock_5_6_7_8();
@@ -363,7 +366,8 @@ void blue_button_pressed(uint8_t numero_experience)
 
 			  case 7:
 				  RTC_wakeup_init_from_stop(7);
-				  LL_PWR_SetPowerMode(LL_PWR_MODE_STOP2);
+//				  LL_PWR_SetPowerMode(LL_PWR_MODE_STOP2);
+				  _flavien_set_stop_mode(2);
 				  LL_LPM_EnableDeepSleep();
 				  __WFI();
 				  blue_mode = 0;
@@ -371,7 +375,9 @@ void blue_button_pressed(uint8_t numero_experience)
 
 			  case 8:
 				  RTC_wakeup_init_from_standby_or_shutdown(7);
-				  LL_PWR_SetPowerMode(LL_PWR_MODE_SHUTDOWN);
+//				  LL_PWR_SetPowerMode(LL_PWR_MODE_SHUTDOWN);
+				  _flavien_set_stop_mode(4);
+				  NVIC_DisableIRQ(SysTick_IRQn);
 				  LL_LPM_EnableDeepSleep();
 				  __WFI();
 				  blue_mode = 0;

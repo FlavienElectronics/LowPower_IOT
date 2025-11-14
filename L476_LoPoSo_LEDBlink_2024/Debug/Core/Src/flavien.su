@@ -1,9 +1,9 @@
+../Drivers/CMSIS/Include/core_cm4.h:1717:22:__NVIC_DisableIRQ	16	static,ignoring_inline_asm
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:2270:22:LL_RCC_LSE_Enable	4	static
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:2362:26:LL_RCC_LSE_IsReady	4	static
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:2523:22:LL_RCC_MSI_EnablePLLMode	4	static
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_cortex.h:310:22:LL_LPM_EnableSleep	4	static
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_cortex.h:321:22:LL_LPM_EnableDeepSleep	4	static
-../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_pwr.h:434:22:LL_PWR_SetPowerMode	16	static
 ../Core/Src/flavien.c:5:6:_flavien_MSI_4Mhz	4	static
 ../Core/Src/flavien.c:17:6:_flavien_MSI_24Mhz	4	static
 ../Core/Src/flavien.c:28:6:_flavien_PLL_80Mhz	4	static

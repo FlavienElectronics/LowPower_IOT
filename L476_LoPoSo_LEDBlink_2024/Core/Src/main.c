@@ -195,6 +195,7 @@ void RTC_WKUP_IRQHandler()
 {
 	LL_EXTI_ClearFlag_0_31( LL_EXTI_LINE_20 );
 	blue_mode = 0;
+	NVIC_EnableIRQ(SysTick_IRQn);
 }
 
 void Error_Handler(void)
