@@ -1,0 +1,16 @@
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_gpio.h:957:22:LL_GPIO_SetOutputPin	16	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_gpio.h:986:22:LL_GPIO_ResetOutputPin	16	static
+../Core/Inc/RadioFunctions.h:47:20:nRF24_CE_L	8	static
+../Core/Inc/RadioFunctions.h:51:20:nRF24_CE_H	8	static
+../Core/Inc/RadioFunctions.h:76:20:Delay_ms	16	static
+../Core/Src/RadioFunctions.c:45:16:nRF24_TransmitPacket	24	static
+../Core/Src/RadioFunctions.c:103:6:Init_Transceiver	16	static
+../Core/Src/RadioFunctions.c:122:6:Config_RF_channel	16	static
+../Core/Src/RadioFunctions.c:141:6:Config_CRC	24	static
+../Core/Src/RadioFunctions.c:158:6:Config_PRX_adress	24	static
+../Core/Src/RadioFunctions.c:194:6:Config_PTX_adress	48	static
+../Core/Src/RadioFunctions.c:258:6:Config_ESB_Protocol	16	static
+../Core/Src/RadioFunctions.c:280:6:StartListen	8	static
+../Core/Src/RadioFunctions.c:287:6:StopListen	8	static
+../Core/Src/RadioFunctions.c:295:6:Continuous_RX_Listen	16	static
+../Core/Src/RadioFunctions.c:322:6:Transmit_Message	16	static

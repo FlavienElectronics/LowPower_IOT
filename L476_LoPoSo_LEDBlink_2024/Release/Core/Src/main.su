@@ -1,0 +1,12 @@
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_rcc.h:2362:26:LL_RCC_LSE_IsReady	0	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_system.h:1557:22:LL_FLASH_EnableRunPowerDown	0	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_cortex.h:310:22:LL_LPM_EnableSleep	0	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_cortex.h:321:22:LL_LPM_EnableDeepSleep	0	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_pwr.h:434:22:LL_PWR_SetPowerMode	0	static
+../Core/Src/main.c:45:13:RTC_wakeup_init	0	static
+../Core/Src/main.c:63:6:RTC_wakeup_init_from_standby_or_shutdown	8	static
+../Core/Src/main.c:74:6:RTC_wakeup_init_from_stop	8	static,ignoring_inline_asm
+../Core/Src/main.c:102:5:main	16	static,ignoring_inline_asm
+../Core/Src/main.c:300:6:SysTick_Handler	32	static
+../Core/Src/main.c:388:6:RTC_WKUP_IRQHandler	0	static
+../Core/Src/main.c:400:6:Error_Handler	0	static
